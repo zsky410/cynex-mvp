@@ -2,17 +2,14 @@
 
 A full-stack storefront for browsing Cynex premium app products and contacting support to purchase a selected package option.
 
-Project vocabulary and current delivery state live in [CONTEXT.md](./CONTEXT.md) and [PROJECT_STATUS.md](./PROJECT_STATUS.md). Every accepted change must update `PROJECT_STATUS.md` in the same Pull Request.
+Start with [PROJECT_STATUS.md](./PROJECT_STATUS.md), then read the [project plan](./docs/PROJECT_PLAN.md), [architecture](./docs/ARCHITECTURE.md), and [domain vocabulary](./CONTEXT.md). Historical changes live in [CHANGELOG.md](./CHANGELOG.md). Agent workflow and boundaries are in [AGENTS.md](./AGENTS.md).
 
-## Features
+## Current delivery status
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- Phase 1 foundation: complete and accepted.
+- Phase 2 database/Auth: complete and accepted on staging.
+- Phase 3 Admin Catalog: next.
+- Production database migration and customer-domain cutover: deferred.
 
 ## Getting Started
 
