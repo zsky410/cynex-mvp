@@ -9,4 +9,6 @@ Use this runbook only for the `cynex-mvp-staging` Supabase project. Never run `s
 5. In Supabase SQL Editor, allowlist the existing staging Auth user with `insert into public.app_admins (user_id) values ('<staging-admin-uuid>');`.
 6. Verify anonymous RLS, Admin login/logout, non-admin denial, and cleanup all temporary fixtures.
 
+The hosted database login role may not be allowed to execute pgTAP in the shared `extensions` schema. Keep the full pgTAP suite in local CI; verify hosted anonymous behavior through the publishable-key Data API and authenticated behavior through the deployed application.
+
 Do not place database passwords, secret/service-role keys, or user passwords in Git, project documentation, terminal history, or chat.

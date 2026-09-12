@@ -10,7 +10,7 @@ Last updated: 2026-09-12
 - Runtime: Node 22, pnpm 10.24.0.
 - CI: `quality` passes on `main` and `develop`.
 - Deployment: staging and production Workers Builds, isolated runtime variables, and automatic deployments are accepted end to end. Production has no custom route.
-- Data: schema, constraints, RLS, search RPC, generated types, and Auth are locally implemented; staging migrations and Auth acceptance are pending.
+- Data: schema, constraints, RLS, search RPC, generated types, and Auth are implemented locally; all four migrations are applied to staging and anonymous remote acceptance passes. Admin allowlist and authenticated staging acceptance are pending.
 - Production safety: the existing landing deployment remains untouched.
 
 ## Current work
@@ -48,3 +48,4 @@ Every accepted change updates this file in the same Pull Request. Keep current t
 - Implemented the catalog schema, constraints, indexes, RLS, public search RPC, and generated database types.
 - Added SSR cookie authentication, Admin allowlist authorization, login/logout, and an authenticated `/admin` guard without a service-role runtime key.
 - Passed local database lint, 30 pgTAP assertions, and real HTTP Auth acceptance with disposable Admin and non-admin fixtures.
+- Applied the four reviewed Phase 2 migrations to Supabase staging, confirmed migration history and remote schema lint, synchronized generated types with PostgREST 14.5, and passed anonymous Data API/RPC/mutation acceptance.
