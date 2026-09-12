@@ -42,3 +42,8 @@ All notable project changes are recorded here. Current operational truth remains
 - Accepted Product → Package → Variant → Duration Option as the canonical commercial hierarchy, superseding the original schema that combined Variant and duration in one Option.
 - Added the full Product/UX specification covering direction, product promise, user types/jobs, experience principles, Discovery Onboarding, detailed Visitor/Admin journeys, selector behavior, screen states, content/copy, analytics, accessibility, trust/safety, and acceptance scenarios.
 - Added ADR 0004 and scheduled a forward-only staging schema/RLS/search/test amendment as Phase `3A`; production remains unchanged.
+- Added a documentation map with canonical ownership and handoff-completeness checks.
+- Added a stable Landing audit/port runbook pinned to verified tag `landing-v1-stable` and commit `d28ed1f`, using a detached clean worktree and screenshot-first evidence rather than the dirty checkout.
+- Added a complete infrastructure/environment runbook and recorded the required manual rotation/removal of the plaintext credential inventory before further remote Phase 3 work.
+- Expanded the staging database runbook from a short checklist into local/dry-run/push/types/RLS/Auth/cleanup/evidence/failure gates.
+- Added a production readiness, cutover, monitoring, routing rollback, and roll-forward runbook while keeping execution deferred to approved Phases 6–7.

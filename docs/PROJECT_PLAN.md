@@ -639,6 +639,8 @@ Phase 3 gate: Admin creates Claude → Claude Team → 1.5x Pro → 1/3/12-month
 
 #### 4A — Public shell and foundation
 
+- Follow `docs/LANDING_DESIGN_AUDIT_RUNBOOK.md`; verify the local/remote `landing-v1-stable` tag and render a detached clean worktree rather than the dirty Landing checkout.
+- Produce the required source/asset/component audit report and 360/768/1280/1440 screenshot evidence before porting.
 - Port only the approved Landing brand assets/tokens needed by Storefront.
 - Implement public header, mobile navigation, footer, route-level error boundary, 404, and global responsive primitives.
 - Implement server Catalog query adapters and mapping types without exposing Admin-only fields.
@@ -700,6 +702,8 @@ Phase 5 gate: SSR, metadata, structured data, canonical/404/sitemap behavior and
 
 ### Phase 6 — QA and production data
 
+Follow `docs/RELEASE_CUTOVER_RUNBOOK.md`; none of these steps authorizes production mutation until owner approval.
+
 1. Complete keyboard, screen-reader semantics, contrast, responsive, reduced-motion, and cross-browser acceptance.
 2. Complete security review for RLS, Origin, session, headers, rich text, Cloudinary signatures/prefixes, logging, and built-asset secret scanning.
 3. Meet Lighthouse targets on representative public routes and resolve hydration/runtime errors.
@@ -713,6 +717,8 @@ Phase 5 gate: SSR, metadata, structured data, canonical/404/sitemap behavior and
 Phase 6 gate: UAT has no open high-severity blocker; production data and authorization are verified; backups exist; the exact cutover and rollback procedures have been rehearsed and recorded.
 
 ### Phase 7 — Cutover
+
+Execute `docs/RELEASE_CUTOVER_RUNBOOK.md` and capture its release evidence.
 
 1. Freeze Catalog-changing work and confirm current production backup.
 2. Merge the accepted release from `develop` to `main` and confirm the production Worker build/deploy.

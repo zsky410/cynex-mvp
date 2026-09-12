@@ -2,7 +2,7 @@
 
 A full-stack storefront for browsing Cynex premium applications, selecting a Product → Package → Variant → Duration Option configuration, and contacting support to continue purchasing.
 
-Start with [PROJECT_STATUS.md](./PROJECT_STATUS.md), then read the [Product and UX specification](./docs/PRODUCT_UX_SPEC.md), [complete implementation plan](./docs/PROJECT_PLAN.md), [architecture](./docs/ARCHITECTURE.md), and [domain vocabulary](./CONTEXT.md). The Product/UX specification defines direction, users, journeys, Discovery Onboarding, and exact four-level Selection behavior. The plan defines technical delivery slices, acceptance gates, cutover, and rollback. Historical changes live in [CHANGELOG.md](./CHANGELOG.md). Agent workflow and boundaries are in [AGENTS.md](./AGENTS.md).
+Start with the [documentation map](./docs/README.md) and [current project status](./PROJECT_STATUS.md), then read the [Product and UX specification](./docs/PRODUCT_UX_SPEC.md), [complete implementation plan](./docs/PROJECT_PLAN.md), [architecture](./docs/ARCHITECTURE.md), and [domain vocabulary](./CONTEXT.md). The documentation map links the Landing audit, infrastructure, staging migration, and release/cutover runbooks. Historical changes live in [CHANGELOG.md](./CHANGELOG.md). Agent workflow and boundaries are in [AGENTS.md](./AGENTS.md).
 
 ## Current delivery status
 

@@ -2,12 +2,13 @@
 
 Read these files before changing the project:
 
-1. `PROJECT_STATUS.md` — current phase, verified state, next gate, and boundaries.
-2. `CONTEXT.md` — canonical domain language.
-3. `docs/PRODUCT_UX_SPEC.md` — product direction, users, journeys, onboarding, and interaction contract.
-4. `docs/PROJECT_PLAN.md` — approved scope, architecture, phase plan, and acceptance criteria.
-5. `docs/ARCHITECTURE.md` — current technical structure and security model.
-6. Relevant files in `docs/adr/` before changing architecture or deployment boundaries.
+1. `docs/README.md` — documentation map, ownership, and handoff checklist.
+2. `PROJECT_STATUS.md` — current phase, verified state, next gate, and boundaries.
+3. `CONTEXT.md` — canonical domain language.
+4. `docs/PRODUCT_UX_SPEC.md` — product direction, users, journeys, onboarding, and interaction contract.
+5. `docs/PROJECT_PLAN.md` — approved scope, architecture, phase plan, and acceptance criteria.
+6. `docs/ARCHITECTURE.md` — current technical structure and security model.
+7. Relevant runbook and ADR before changing database, infrastructure, design source, or deployment boundaries.
 
 ## Workflow
 
@@ -26,3 +27,4 @@ Read these files before changing the project:
 - Runtime code uses only the Supabase publishable key. Database passwords and Supabase secret/service-role keys stay outside Git, application runtime, docs, and chat.
 - Authorization uses verified Supabase claims plus `app_admins`; email and client metadata are not authorization sources.
 - Cloudinary operations stay within the current environment folder prefix.
+- Phase 4A audits the Landing only from the verified `landing-v1-stable` clean worktree described in `docs/LANDING_DESIGN_AUDIT_RUNBOOK.md`; never depend on the dirty Landing checkout at build/runtime.
