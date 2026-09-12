@@ -9,13 +9,13 @@ Last updated: 2026-09-12
 - Protected branches: `main` and `develop` require Pull Requests and the `quality` check.
 - Runtime: Node 22, pnpm 10.24.0.
 - CI: `quality` passes on `main` and `develop`.
-- Deployment: `cynex-mvp-staging` and `cynex-mvp-production` are deployed manually and return HTTP 200. Workers Builds, runtime variables, and custom domains are not connected yet.
+- Deployment: both Workers are deployed. `staging.cynex.site` is active and remotely verified; its `workers.dev` and Preview URLs are disabled. Workers Builds and runtime variables are not connected yet. Production has no custom route.
 - Data: staging and production Supabase projects exist; schema implementation has not started.
 - Production safety: the existing landing deployment remains untouched.
 
 ## Current work
 
-Staging crawler protection is implemented and remotely verified on the `workers.dev` URL. The deploy-script correction must pass CI and merge into `develop`; Workers Builds, variables, and `staging.cynex.site` must then be configured and verified.
+The deploy-script and custom-domain changes must pass CI and merge into `develop`. Cloudflare Workers Builds and environment variables must then be configured and verified.
 
 ## Next gate
 
@@ -37,3 +37,5 @@ Every accepted change updates this file in the same Pull Request. Keep current t
 - Corrected environment deployment scripts so the Cloudflare Vite build selects its target environment before Wrangler deploys it.
 - Deployed the staging and production skeleton Workers without assigning the production domain; removed an incorrectly named temporary Worker created during deployment diagnosis.
 - Remotely verified both Workers return HTTP 200, staging is non-indexable, production is not marked `noindex`, and the existing `cynex.site` landing remains reachable.
+- Declared `staging.cynex.site` as the staging custom domain and an empty production route list in version-controlled Wrangler configuration.
+- Verified `staging.cynex.site` over HTTPS with its crawler protections, no GA4, and no secret markers; the staging `workers.dev` and Preview URLs are disabled.
