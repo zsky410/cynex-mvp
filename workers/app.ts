@@ -1,6 +1,10 @@
-import { createRequestHandler } from "react-router";
+import { createRequestHandler, RouterContextProvider } from "react-router";
 
 import { isStagingUrl } from "../app/lib/environment";
+import {
+  runtimeEnvContext,
+  type RuntimeEnv,
+} from "../app/lib/runtime-context";
 
 const requestHandler = createRequestHandler(
   () => import("virtual:react-router/server-build"),
@@ -8,8 +12,10 @@ const requestHandler = createRequestHandler(
 );
 
 export default {
-  async fetch(request) {
-    const response = await requestHandler(request);
+  async fetch(request, env) {
+    const context = new RouterContextProvider();
+    context.set(runtimeEnvContext, env);
+    const response = await requestHandler(request, context);
 
     if (!isStagingUrl(request.url)) return response;
 
@@ -37,4 +43,4 @@ export default {
       })
       .transform(protectedResponse);
   },
-} satisfies ExportedHandler<Env>;
+} satisfies ExportedHandler<RuntimeEnv>;

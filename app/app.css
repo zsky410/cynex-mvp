@@ -13,3 +13,69 @@ body {
     color-scheme: dark;
   }
 }
+
+.admin-auth-shell,
+.admin-shell {
+  min-height: 100vh;
+  padding: 4rem 1.5rem;
+  background: #f6f8fb;
+  color: #0b132b;
+}
+
+.admin-auth-card,
+.admin-shell > header,
+.admin-shell > p {
+  width: min(100%, 34rem);
+  margin: 0 auto;
+}
+
+.admin-auth-card {
+  padding: 2rem;
+  border: 1px solid #dce3ec;
+  border-radius: 1rem;
+  background: white;
+}
+
+.admin-auth-eyebrow {
+  color: #007fae;
+  font-weight: 700;
+}
+
+.admin-auth-form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.admin-auth-form label {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+
+.admin-auth-form input {
+  padding: 0.75rem;
+  border: 1px solid #aab7c6;
+  border-radius: 0.5rem;
+}
+
+.admin-auth-form button,
+.admin-shell button {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: #0b132b;
+  color: white;
+  font-weight: 700;
+}
+
+.admin-auth-error {
+  color: #b42318;
+}
+
+.admin-shell > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}

@@ -24,6 +24,18 @@ _Avoid_: User, customer
 An authenticated operator authorized to manage the Catalog and Storefront settings.
 _Avoid_: User, staff
 
+**Authenticated non-admin**:
+An authenticated account that is not allowlisted as an Admin and therefore has Visitor-level Catalog access only.
+_Avoid_: Admin, staff
+
+**Package**:
+A named commercial grouping of purchase Options for one Product.
+_Avoid_: Plan, tier
+
+**Option**:
+A purchasable duration and price within a Package.
+_Avoid_: Package, variant
+
 **Draft**:
 Catalog content visible to Admins but not Visitors.
 

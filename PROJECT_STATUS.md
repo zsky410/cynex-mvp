@@ -4,18 +4,18 @@ Last updated: 2026-09-12
 
 ## Current state
 
-- Current phase: Phase 2 — Database and authentication (ready to start).
+- Current phase: Phase 2 — Database and authentication (local implementation complete).
 - Repository: `zsky410/cynex-mvp` (public by owner decision).
 - Protected branches: `main` and `develop` require Pull Requests and the `quality` check.
 - Runtime: Node 22, pnpm 10.24.0.
 - CI: `quality` passes on `main` and `develop`.
 - Deployment: staging and production Workers Builds, isolated runtime variables, and automatic deployments are accepted end to end. Production has no custom route.
-- Data: staging and production Supabase projects exist; schema implementation has not started.
+- Data: schema, constraints, RLS, search RPC, generated types, and Auth are implemented locally; all four migrations are applied to staging and anonymous remote acceptance passes. Admin allowlist and authenticated staging acceptance are pending.
 - Production safety: the existing landing deployment remains untouched.
 
 ## Current work
 
-Design and implement the initial Supabase schema, generated types, RLS policies and tests, then add admin authentication and session guards.
+Review and apply migrations to Supabase staging, allowlist the existing staging Admin UUID, then run authenticated staging acceptance.
 
 ## Next gate
 
@@ -45,3 +45,7 @@ Every accepted change updates this file in the same Pull Request. Keep current t
 - Connected production Workers Builds to `main` and started its first automatic deployment acceptance run.
 - Accepted the first automatic production deployment and runtime bindings without attaching `cynex.site`; production remained non-index-blocked, no analytics or secret markers were emitted, and the existing landing remained reachable.
 - Completed Phase 1 and opened Phase 2 for database and authentication implementation.
+- Implemented the catalog schema, constraints, indexes, RLS, public search RPC, and generated database types.
+- Added SSR cookie authentication, Admin allowlist authorization, login/logout, and an authenticated `/admin` guard without a service-role runtime key.
+- Passed local database lint, 30 pgTAP assertions, and real HTTP Auth acceptance with disposable Admin and non-admin fixtures.
+- Applied the four reviewed Phase 2 migrations to Supabase staging, confirmed migration history and remote schema lint, synchronized generated types with PostgREST 14.5, and passed anonymous Data API/RPC/mutation acceptance.
