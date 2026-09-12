@@ -8,13 +8,15 @@
 	},
 	"scripts": {
 		"build": "react-router build",
+		"build:production": "CLOUDFLARE_ENV=production react-router build",
+		"build:staging": "CLOUDFLARE_ENV=staging react-router build",
 		"dev": "react-router dev",
 		"lint": "eslint .",
 		"test": "vitest run --passWithNoTests",
 		"test:e2e": "playwright test",
 		"typecheck": "wrangler types && react-router typegen && tsc -b",
-		"deploy:staging": "pnpm run build && wrangler deploy --env staging",
-		"deploy:production": "pnpm run build && wrangler deploy --env production",
+		"deploy:staging": "pnpm run build:staging && wrangler deploy --env staging",
+		"deploy:production": "pnpm run build:production && wrangler deploy --env production",
 		"preview": "pnpm run build && vite preview",
 		"cf-typegen": "wrangler types",
 		"postinstall": "wrangler types"
