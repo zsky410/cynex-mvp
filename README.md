@@ -1,18 +1,16 @@
 # Cynex Storefront MVP
 
-A full-stack storefront for browsing Cynex premium app products and contacting support to purchase a selected package option.
+A full-stack storefront for browsing Cynex premium applications, selecting a Product → Package → Variant → Duration Option configuration, and contacting support to continue purchasing.
 
-Project vocabulary and current delivery state live in [CONTEXT.md](./CONTEXT.md) and [PROJECT_STATUS.md](./PROJECT_STATUS.md). Every accepted change must update `PROJECT_STATUS.md` in the same Pull Request.
+Start with the [documentation map](./docs/README.md) and [current project status](./PROJECT_STATUS.md), then read the [Product and UX specification](./docs/PRODUCT_UX_SPEC.md), [complete implementation plan](./docs/PROJECT_PLAN.md), [architecture](./docs/ARCHITECTURE.md), and [domain vocabulary](./CONTEXT.md). The documentation map links the Landing audit, infrastructure, staging migration, and release/cutover runbooks. Historical changes live in [CHANGELOG.md](./CHANGELOG.md). Agent workflow and boundaries are in [AGENTS.md](./AGENTS.md).
 
-## Features
+## Current delivery status
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- Phase 1 foundation: complete and accepted.
+- Phase 2 database/Auth: original schema complete and accepted on staging.
+- Four-level Catalog requirement: accepted; forward staging amendment is Phase `3A`.
+- Phase 3 Admin Catalog: next after the `3A` hierarchy amendment.
+- Production database migration and customer-domain cutover: deferred.
 
 ## Getting Started
 
