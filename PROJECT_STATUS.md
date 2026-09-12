@@ -4,22 +4,22 @@ Last updated: 2026-09-12
 
 ## Current state
 
-- Current phase: Phase 1 — Foundation.
+- Current phase: Phase 2 — Database and authentication (ready to start).
 - Repository: `zsky410/cynex-mvp` (public by owner decision).
 - Protected branches: `main` and `develop` require Pull Requests and the `quality` check.
 - Runtime: Node 22, pnpm 10.24.0.
 - CI: `quality` passes on `main` and `develop`.
-- Deployment: staging Workers Builds and isolated runtime variables are accepted end to end. Production Workers Builds is connected to `main`; its first automatic deployment and runtime variables are pending. Production has no custom route.
+- Deployment: staging and production Workers Builds, isolated runtime variables, and automatic deployments are accepted end to end. Production has no custom route.
 - Data: staging and production Supabase projects exist; schema implementation has not started.
 - Production safety: the existing landing deployment remains untouched.
 
 ## Current work
 
-Validate the first production deployment through GitHub CI and Cloudflare Workers Builds while keeping the production Worker detached from `cynex.site`.
+Design and implement the initial Supabase schema, generated types, RLS policies and tests, then add admin authentication and session guards.
 
 ## Next gate
 
-Phase 1 is complete when the local gates and CI pass, the staging Worker deploys, `staging.cynex.site` serves over HTTPS, crawler protection is verified, and no analytics or secrets appear in staging.
+Phase 2 is complete when migrations apply cleanly, generated types are current, database tests prove anonymous users cannot mutate catalog data or read drafts, and authenticated admin login/logout/session guards work on staging.
 
 ## Documentation rule
 
@@ -43,3 +43,5 @@ Every accepted change updates this file in the same Pull Request. Keep current t
 - Connected staging Workers Builds and configured its isolated runtime variables; started the first automatic deployment acceptance run.
 - Accepted the first automatic staging deployment: GitHub `quality` passed, Cloudflare deployed the merge from `develop`, crawler protections remained active, the Cloudinary secret was preserved, and the landing stayed reachable.
 - Connected production Workers Builds to `main` and started its first automatic deployment acceptance run.
+- Accepted the first automatic production deployment and runtime bindings without attaching `cynex.site`; production remained non-index-blocked, no analytics or secret markers were emitted, and the existing landing remained reachable.
+- Completed Phase 1 and opened Phase 2 for database and authentication implementation.
