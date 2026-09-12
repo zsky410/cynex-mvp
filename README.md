@@ -1,14 +1,15 @@
 # Cynex Storefront MVP
 
-A full-stack storefront for browsing Cynex premium app products and contacting support to purchase a selected package option.
+A full-stack storefront for browsing Cynex premium applications, selecting a Product → Package → Variant → Duration Option configuration, and contacting support to continue purchasing.
 
-Start with [PROJECT_STATUS.md](./PROJECT_STATUS.md), then read the [complete Storefront MVP functional and delivery plan](./docs/PROJECT_PLAN.md), [architecture](./docs/ARCHITECTURE.md), and [domain vocabulary](./CONTEXT.md). The plan is the implementation source of truth for every public/Admin route, UX state, delivery slice, acceptance gate, cutover, and rollback. Historical changes live in [CHANGELOG.md](./CHANGELOG.md). Agent workflow and boundaries are in [AGENTS.md](./AGENTS.md).
+Start with [PROJECT_STATUS.md](./PROJECT_STATUS.md), then read the [Product and UX specification](./docs/PRODUCT_UX_SPEC.md), [complete implementation plan](./docs/PROJECT_PLAN.md), [architecture](./docs/ARCHITECTURE.md), and [domain vocabulary](./CONTEXT.md). The Product/UX specification defines direction, users, journeys, Discovery Onboarding, and exact four-level Selection behavior. The plan defines technical delivery slices, acceptance gates, cutover, and rollback. Historical changes live in [CHANGELOG.md](./CHANGELOG.md). Agent workflow and boundaries are in [AGENTS.md](./AGENTS.md).
 
 ## Current delivery status
 
 - Phase 1 foundation: complete and accepted.
-- Phase 2 database/Auth: complete and accepted on staging.
-- Phase 3 Admin Catalog: next.
+- Phase 2 database/Auth: original schema complete and accepted on staging.
+- Four-level Catalog requirement: accepted; forward staging amendment is Phase `3A`.
+- Phase 3 Admin Catalog: next after the `3A` hierarchy amendment.
 - Production database migration and customer-domain cutover: deferred.
 
 ## Getting Started

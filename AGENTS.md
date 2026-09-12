@@ -4,9 +4,10 @@ Read these files before changing the project:
 
 1. `PROJECT_STATUS.md` — current phase, verified state, next gate, and boundaries.
 2. `CONTEXT.md` — canonical domain language.
-3. `docs/PROJECT_PLAN.md` — approved scope, architecture, phase plan, and acceptance criteria.
-4. `docs/ARCHITECTURE.md` — current technical structure and security model.
-5. Relevant files in `docs/adr/` before changing architecture or deployment boundaries.
+3. `docs/PRODUCT_UX_SPEC.md` — product direction, users, journeys, onboarding, and interaction contract.
+4. `docs/PROJECT_PLAN.md` — approved scope, architecture, phase plan, and acceptance criteria.
+5. `docs/ARCHITECTURE.md` — current technical structure and security model.
+6. Relevant files in `docs/adr/` before changing architecture or deployment boundaries.
 
 ## Workflow
 

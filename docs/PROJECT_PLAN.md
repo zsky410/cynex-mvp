@@ -3,16 +3,21 @@
 Status: active source of truth  
 Last updated: 2026-09-12
 
+Read `docs/PRODUCT_UX_SPEC.md` for product direction, user jobs, Discovery Onboarding, detailed journeys, four-level selector behavior, content rules, and acceptance scenarios. This plan is the technical delivery contract for that experience.
+
 ## 1. Goal
 
-Replace the Google Sheet catalog with a Vietnamese storefront where Visitors can discover products, compare Packages and Options, see price/availability, and contact Cynex through Zalo or Facebook. The existing landing remains available as the rollback target.
+Replace the Google Sheet catalog with a Vietnamese storefront where Visitors can discover Products, compare Packages, Variants, and Duration Options, see price/availability, and contact Cynex through Zalo or Facebook. The existing Landing remains available as the rollback target.
 
 Example hierarchy:
 
 ```text
 Claude
 └── Claude Team
-    └── 1.5x Pro — 1 tháng
+    └── 1.5x Pro
+        ├── 1 tháng — 400.000đ
+        ├── 3 tháng — 1.050.000đ
+        └── 12 tháng — 3.600.000đ
 ```
 
 ## 2. MVP scope
@@ -20,10 +25,10 @@ Claude
 Included:
 
 - Storefront homepage, catalog, category, search, and product detail.
-- Package/Option pricing and availability.
+- Four-level Product → Package → Variant → Duration Option selection, pricing, and availability.
 - Contact modal with Zalo/Facebook handoff.
 - One environment-specific Admin account.
-- Admin CRUD for Category, Product, Package, Option, and media.
+- Admin CRUD for Category, Product, Package, Variant, Duration Option, and media.
 - Draft, publish, archive, featured products, and homepage categories.
 - Product/category SEO, consent-gated GA4, staging and production.
 
@@ -93,24 +98,60 @@ Staging is public but non-indexable. It uses only staging data and `cynex/stagin
 - `products`: Category owner, content, tags, lifecycle, SEO, publish time.
 - `product_media`: verified Cloudinary metadata and thumbnail/cover/gallery role.
 - `packages`: commercial group within a Product.
-- `options`: duration, VND prices, stock, active state.
+- `variants`: form, capacity, entitlement, or service level within a Package.
+- `options`: Duration Options within a Variant, with duration, VND prices, stock, and active state.
 - `homepage_featured_products`: ordered published Products.
 - `homepage_category_sections`: up to three ordered active Categories.
 - `site_settings`: singleton contact-channel configuration.
+
+### Target four-level commercial tables
+
+`packages` remains owned by `products` and retains `name`, optional `description`/`badge`, `sort_order`, `is_active`, and timestamps.
+
+The Phase 3 amendment adds `variants`:
+
+- `id uuid` primary key.
+- `package_id uuid` required, references `packages(id)` with cascade delete.
+- `name text` required, such as `1.5x Pro`.
+- `description text` optional.
+- `badge text` optional.
+- `sort_order integer` non-negative.
+- `is_active boolean`.
+- `created_at` and `updated_at` timestamps.
+
+`options` becomes the Duration Option table while retaining its physical name to keep migration risk bounded:
+
+- Replace `package_id` with required `variant_id` referencing `variants(id)` with cascade delete.
+- Remove the superseded `name` after Variant labels have been migrated; a Duration Option is identified by its required `duration_label` within a Variant.
+- Keep integer `price_vnd`, optional `compare_at_price_vnd`, `is_in_stock`, optional `badge`, `sort_order`, `is_active`, and timestamps.
+- Add an index on `(variant_id, sort_order)` and remove the superseded Package index/foreign key only after data migration.
+
+Staging migration order:
+
+1. Create `variants`, trigger, indexes, grants, and Admin/public RLS.
+2. Add nullable `variant_id` to `options`.
+3. For each existing Package with Options, create deterministic staging Variants from the old Option `name` values after reviewing staging fixtures.
+4. Backfill every Option to one Variant and retain its independent `duration_label`.
+5. Make `variant_id` required.
+6. Update public visibility policies and `catalog_search` to traverse Package → Variant → Duration Option.
+7. Remove the superseded `package_id` relationship and duplicated Option `name` column.
+8. Regenerate TypeScript types and expand pgTAP/remote acceptance.
+
+No production backfill exists yet because production migrations remain unapplied. Applied Phase 2 migration files remain immutable; this is a new forward migration.
 
 ### Invariants
 
 - Slugs use lowercase URL-safe segments and are unique.
 - A Product slug becomes immutable after first publication.
 - Prices are non-negative; compare-at price is not below sale price.
-- Names and durations are non-empty.
+- Package and Variant names are non-empty; Duration Option duration labels are non-empty.
 - One thumbnail and one cover maximum per Product.
 - Homepage references remain published/active.
 - Contact URLs and stored media URLs use HTTPS.
 
 ### RLS
 
-- Anonymous: active Categories; published Products and their public children; no allowlist; no mutation.
+- Anonymous: active Categories; published Products and their public Package, Variant, Duration Option, and media children; no allowlist; no mutation.
 - Authenticated non-admin: same Catalog access as a Visitor; no mutation.
 - Admin: CRUD through allowlist-backed RLS.
 - Authorization depends on verified user ID, never email or client metadata.
@@ -130,7 +171,9 @@ type CatalogQuery = {
 };
 ```
 
-Search ignores case and Vietnamese diacritics, searches Product/Package/Option text, excludes drafts, computes available minimum price, and ranks unavailable products after available ones for price sorting.
+Search ignores case and Vietnamese diacritics, searches Product/Package/Variant/Duration Option text, excludes drafts, computes available minimum price, and ranks unavailable Products after available ones for price sorting.
+
+The four-level hierarchy is the accepted target model. Phase 2 is complete for its original schema, but its `options.package_id` shape is now superseded. Phase 3 begins with a forward-only staging migration that adds `variants` and changes each Duration Option to belong to a Variant; production remains unapplied.
 
 ## 6. Storefront functional specification
 
@@ -143,7 +186,7 @@ Vietnamese slugs are the canonical public URLs. The English route names from the
 | `/` | Storefront homepage | index; CDN cache up to 60 seconds |
 | `/san-pham` | Complete Catalog | index; URL-driven query; CDN cache up to 60 seconds |
 | `/danh-muc/:slug` | One Category and its Products | index when active; otherwise 404 |
-| `/san-pham/:slug` | Product detail and Option selection | index when published; otherwise 404 |
+| `/san-pham/:slug` | Product detail and four-level Selection | index when published; otherwise 404 |
 | `/tim-kiem?q=` | Dedicated search results | noindex; no-store |
 | `/chinh-sach-bao-mat` | Privacy and analytics-consent information | index |
 | `*` | Branded not-found page | noindex; HTTP 404 |
@@ -175,7 +218,7 @@ The homepage is a discovery path, not a generic marketing page. Its canonical or
 
 The hero preserves the approved Landing identity: two-column composition, cyan gradient, Cynex sphere, restrained floating elements, Manrope typography, and generous spacing. Its copy changes to explain that Visitors can search premium applications directly. It provides:
 
-- A search field that submits to `/tim-kiem?q=...`.
+- A search field that submits to `/tim-kiem?q=<tu-khoa>`.
 - Primary CTA `Khám phá sản phẩm` to `/san-pham`.
 - Secondary CTA `Cách mua` to the purchase-process section.
 - Up to five active Category labels in the visual composition.
@@ -183,7 +226,7 @@ The hero preserves the approved Landing identity: two-column composition, cyan g
 
 Featured Products come only from `homepage_featured_products` and preserve their configured order. Each Category shelf comes only from `homepage_category_sections`, shows its title/description and a bounded selection of published Products, and links to the complete Category page. Empty merchandising slots collapse cleanly; they do not render placeholder content.
 
-The purchase process is fixed MVP content: choose a Product, select a Package/Option, then continue the conversation through an enabled Contact Channel. Trust and FAQ copy remain source-controlled in MVP; a full page CMS is explicitly deferred.
+The purchase process is fixed MVP content: choose a Product, then select its Package, Variant, and Duration Option before continuing through an enabled Contact Channel. Trust and FAQ copy remain source-controlled in MVP; a full page CMS is explicitly deferred.
 
 ### 6.4. Product card contract
 
@@ -193,11 +236,11 @@ Every Product card displays:
 - Category name.
 - Product name and short description.
 - Optional Product badge and a bounded tag list.
-- Availability derived from active Options.
-- `Từ <min_price>` derived only from active, in-stock Options.
+- Availability derived from active Duration Options whose parent Variant and Package are active.
+- `Từ <min_price>` derived only from active, in-stock Duration Options.
 - `Xem chi tiết` link to the canonical Product URL.
 
-If no active Option is in stock, the card displays `Tạm hết hàng`, omits a misleading minimum price, remains navigable, and never opens the contact flow directly. Cards have a stable image ratio and comparable height so mixed content does not break the grid.
+If no active Duration Option on a fully active parent path is in stock, the card displays `Tạm hết hàng`, omits a misleading minimum price, remains navigable, and never opens the contact flow directly. Cards have a stable image ratio and comparable height so mixed content does not break the grid.
 
 ### 6.5. Catalog and search behavior
 
@@ -238,14 +281,16 @@ An inactive or unknown Category returns HTTP 404 and is absent from navigation, 
 - Category, Product name, optional badge, short description, and tags.
 - Starting price and aggregate availability.
 - Allowlisted rich-description renderer.
-- Ordered Package selector and ordered Options within each Package.
-- Price, compare-at price, duration, Option badge, and stock state.
+- Ordered Package selector, ordered Variants within each Package, and ordered Duration Options within each Variant.
+- Variant name/description/badge followed by Duration Option label, price, compare-at price, badge, and stock state.
 - Sticky purchase summary on desktop and sticky bottom action on mobile.
 - Related published Products from the same Category.
 
-The first active Package containing an in-stock active Option opens by default. Within it, the first available Option is selected. Visitors may inspect out-of-stock Options, but cannot use them to initiate contact. Changing Package clears any incompatible Option selection.
+Selection is a progressive four-level path. Product is fixed by the detail route. The first active Package containing a purchasable descendant opens by default, but no Variant or Duration Option is silently committed as the Visitor's final Selection. The Visitor explicitly chooses a Variant, then an in-stock Duration Option. A single available Package or Variant may be visually pre-expanded, but the selected state remains obvious and reversible.
 
-The purchase action remains disabled until an in-stock Option is selected. Its summary always reflects the currently selected Product, Package, Option, duration, and price. The application never implies online checkout, payment, reservation, or guaranteed inventory.
+Changing Package clears Variant and Duration Option. Changing Variant clears Duration Option. Out-of-stock Duration Options remain visible and disabled with `Tạm hết hàng`; inactive descendants are not public. If only one purchasable Duration Option exists, it may be selected automatically only when the UI announces the selection clearly.
+
+The purchase action remains disabled until an in-stock Duration Option is selected. Its summary always reflects the currently selected Product, Package, Variant, Duration Option, duration, and price. The application never implies online checkout, payment, reservation, or guaranteed inventory.
 
 An unknown, draft, archived, or Category-hidden Product returns HTTP 404 to a Visitor. Admin preview of a draft is rendered only inside the authenticated Admin area; it never creates a public draft URL.
 
@@ -260,17 +305,18 @@ type ContactIntent = {
   productSlug: string;
   packageId: string;
   packageName: string;
-  optionId: string;
-  optionName: string;
+  variantId: string;
+  variantName: string;
+  durationOptionId: string;
   durationLabel: string;
   priceVnd: number;
   canonicalUrl: string;
 };
 ```
 
-The contact dialog displays the selected Product, Package, Option, duration, formatted VND price, and canonical Product link. Actions include `Sao chép nội dung`, `Mở Zalo`, and `Mở Facebook` only when each channel is enabled.
+The contact dialog displays the selected Product, Package, Variant, Duration Option, duration, formatted VND price, and canonical Product link. Actions include `Sao chép nội dung`, `Mở Zalo`, and `Mở Facebook` only when each channel is enabled.
 
-The prefilled Vietnamese message states that the Visitor wants advice for the selected Option. Copy success means only that text reached the clipboard. Opening an external channel means only that navigation was attempted; the Storefront never claims the message was sent, creates an Order, or stores a Lead.
+The prefilled Vietnamese message states that the Visitor wants advice for the complete Selection. Copy success means only that text reached the clipboard. Opening an external channel means only that navigation was attempted; the Storefront never claims the message was sent, creates an Order, or stores a Lead.
 
 If every Contact Channel is disabled, purchase CTAs are hidden and a server-side configuration error is logged without leaking configuration to the Visitor. Popup blocking or clipboard denial produces a clear fallback with selectable text.
 
@@ -292,7 +338,7 @@ The shell supplies consistent breadcrumbs, page title, primary action area, load
 
 ### 7.2. Dashboard
 
-`/admin` displays counts for published, draft, and archived Products; active Categories; and out-of-stock active Options. It includes shortcuts to create a Category or Product and a compact list of Products needing attention, such as drafts and Products with no in-stock Option.
+`/admin` displays counts for published, draft, and archived Products; active Categories; and out-of-stock active Duration Options. It includes shortcuts to create a Category or Product and a compact list of Products needing attention, such as drafts and Products with no in-stock Duration Option.
 
 MVP does not include charts, revenue, orders, visitor analytics, or audit history. Dashboard failure must not log the Admin out; it shows a retryable data error.
 
@@ -335,7 +381,7 @@ Lifecycle semantics:
 - `published`: public when its Category is active; first publication sets `published_at` and locks the slug permanently.
 - `archived`: retained for Admin reference and removed from public discovery.
 
-Archiving a featured Product is blocked until it is removed from featured merchandising. Restoring an archived Product returns it to draft, requiring publish validation again. Hard Product deletion is excluded from the normal UI to prevent accidental cascade deletion of Packages, Options, and media.
+Archiving a featured Product is blocked until it is removed from featured merchandising. Restoring an archived Product returns it to draft, requiring publish validation again. Hard Product deletion is excluded from the normal UI to prevent accidental cascade deletion of Packages, Variants, Duration Options, and media.
 
 ### 7.5. Product editor
 
@@ -343,7 +389,7 @@ The Product editor is one route divided into four clearly navigable sections:
 
 1. Basic information: Category, name, slug, short description, tags, and badge.
 2. Content and media: structured description, thumbnail, cover, and gallery.
-3. Commercial structure: ordered Packages and nested Options.
+3. Commercial structure: ordered Packages, nested Variants, and nested Duration Options.
 4. SEO and lifecycle: SEO title/description, preview, save draft, publish, and archive.
 
 The editor tracks unsaved changes and warns before internal navigation or browser exit. Failed submission preserves user input and moves focus to the error summary. Success feedback appears only after the server mutation succeeds.
@@ -355,20 +401,21 @@ Draft saves allow incomplete commercial data but still enforce safe field types,
 - Non-empty short description and valid structured description.
 - Thumbnail with alt text.
 - At least one active Package.
-- At least one active Option under an active Package.
-- At least one active, in-stock Option with a valid price.
+- At least one active Variant under an active Package.
+- At least one active Duration Option under an active Variant.
+- At least one active, in-stock Duration Option through a fully active parent path, with a valid price.
 - Valid SEO fields within agreed UI limits.
 - At least one globally enabled Contact Channel.
 
 Admin preview renders the draft using the public Product-detail components inside an authenticated, no-store route. Preview does not mutate status, set `published_at`, enter sitemap data, or become accessible to Visitors.
 
-### 7.6. Package and Option editor
+### 7.6. Package, Variant, and Duration Option editor
 
-Each Package manages name, optional description, optional badge, active state, and order. Each nested Option manages name, duration label, VND sale price, optional compare-at price, stock state, active state, optional badge, and order.
+Each Package manages name, optional description, optional badge, active state, and order. Each nested Variant manages name such as `1.5x Pro`, optional description, optional badge, active state, and order. Each nested Duration Option manages a duration label such as `1 tháng`, VND sale price, optional compare-at price, stock state, active state, optional badge, and order.
 
-Admin can add, edit, remove, activate/deactivate, and reorder Packages and Options. MVP uses buttons and collapsible sections rather than drag-and-drop. Currency input accepts digits, displays VND formatting without changing the stored integer, and rejects negative, fractional, overflow, or compare-at-below-sale values.
+Admin can add, edit, remove, activate/deactivate, and reorder all three commercial levels. MVP uses buttons and collapsible sections rather than drag-and-drop. Currency input accepts digits, displays VND formatting without changing the stored integer, and rejects negative, fractional, overflow, or compare-at-below-sale values.
 
-Removing a persisted Package also removes its Options through the database relationship, so the UI must state the impact and require confirmation. Deactivating preserves history and is the preferred choice. A published Product cannot be saved into a state that violates publish rules; the Admin must return it to draft or keep at least one purchasable Option.
+Removing a persisted Package removes its Variants and Duration Options; removing a Variant removes its Duration Options. The UI must count and state this impact before confirmation. Deactivating preserves data and is the preferred choice. A published Product cannot be saved into a state that violates publish rules; the Admin must return it to draft or retain at least one complete purchasable path.
 
 ### 7.7. Structured rich text
 
@@ -425,7 +472,7 @@ The hero's composition, sphere language, whitespace, and motion character are pr
 
 ### 8.2. Required UI primitives
 
-Public primitives: header, mobile drawer, search field, Category chip/list, Product card, image fallback, price block, stock badge, tag/badge, filter controls, mobile filter drawer, sort select, pagination, breadcrumbs, gallery, Package accordion, Option radio card, purchase summary, contact dialog, rich-text renderer, FAQ, consent banner, skeleton, empty state, error state, and not-found state.
+Public primitives: header, mobile drawer, search field, Category chip/list, Product card, image fallback, price block, stock badge, tag/badge, filter controls, mobile filter drawer, sort select, pagination, breadcrumbs, gallery, Package/Variant controls, Duration Option radio card, Selection summary, contact dialog, rich-text renderer, FAQ, consent banner, skeleton, empty state, error state, and not-found state.
 
 Admin primitives: shell/sidebar, mobile navigation, environment badge, breadcrumb, data table/list, status badge, field components, slug field, currency input, rich-text editor, media picker, ordered-list controls, confirmation dialog, notification, error summary, empty state, loading state, and unauthorized/session-expired state.
 
@@ -433,7 +480,7 @@ Admin primitives: shell/sidebar, mobile navigation, environment badge, breadcrum
 
 Required review widths are 360, 768, 1280, and 1440 pixels. Mobile must not rely on horizontal table scrolling for primary tasks; Admin lists may switch to summary rows/cards. Sticky actions must not obscure content or consent UI.
 
-All functionality is keyboard accessible with visible focus. Forms have persistent labels, associated errors, instructions where format is constrained, and focus management after validation. Dialogs trap and restore focus. Package/Option selection uses native-equivalent radio semantics. Status is not communicated by color alone. Text and controls meet WCAG AA contrast. Images have purposeful alt text; decorative imagery uses empty alt. Motion respects system reduced-motion preference.
+All functionality is keyboard accessible with visible focus. Forms have persistent labels, associated errors, instructions where format is constrained, and focus management after validation. Dialogs trap and restore focus. Package, Variant, and Duration Option selection uses native-equivalent radio semantics. Status is not communicated by color alone. Text and controls meet WCAG AA contrast. Images have purposeful alt text; decorative imagery uses empty alt. Motion respects system reduced-motion preference.
 
 ### 8.4. Content ownership
 
@@ -445,7 +492,7 @@ Catalog, merchandising, and Contact Channels are managed in Admin. Header labels
 
 - Public Product content is present in SSR HTML before JavaScript.
 - Home, Category, and Product pages have unique title, description, canonical URL, and Open Graph data.
-- Product pages emit valid `Product` and `AggregateOffer` structured data based on active Options.
+- Product pages emit valid `Product` and `AggregateOffer` structured data based on purchasable Duration Options.
 - Category/Product pages emit `BreadcrumbList` where applicable.
 - Sitemap includes only canonical active Category and published Product URLs.
 - Search, Admin, staging, and error pages are `noindex`.
@@ -505,7 +552,18 @@ Production database migration remains deferred.
 
 Phase 3 is divided into independently reviewable slices. Each slice uses real Supabase data and existing RLS; an in-memory or UI-only implementation does not satisfy the slice.
 
-#### 3A — Shared Admin application shell
+#### 3A — Four-level Catalog hierarchy amendment
+
+- Add `variants` between `packages` and `options`; each Duration Option belongs to exactly one Variant.
+- Define Variant fields, ordering, active-state constraints, indexes, timestamps, grants, RLS, and generated types.
+- Update `catalog_search` to search Variant and Duration Option text and derive price/stock through the complete active parent path.
+- Decide and document a forward migration for any staging rows; do not rewrite already-applied migration history.
+- Extend schema, constraint, RLS, search, and anonymous remote acceptance tests.
+- Review with `supabase db push --dry-run`, apply to staging only, regenerate types, and record evidence.
+
+Acceptance: local reset/tests pass, staging contains the four-level hierarchy, anonymous reads expose only fully public descendants, non-admin mutations fail, Admin mutations pass, search/minimum price remain correct, and production is unchanged.
+
+#### 3B — Shared Admin application shell
 
 - Implement desktop/mobile navigation, environment badge, breadcrumbs, headings, and logout.
 - Add reusable Admin field, error summary, notification, loading, empty, and confirmation components.
@@ -515,7 +573,7 @@ Phase 3 is divided into independently reviewable slices. Each slice uses real Su
 
 Acceptance: the allowlisted staging Admin can navigate the protected shell on desktop/mobile; anonymous and non-admin sessions cannot access it; session/logout behavior remains correct.
 
-#### 3B — Category CRUD and ordering
+#### 3C — Category CRUD and ordering
 
 - Implement list, search/filter, create, edit, hide/restore, guarded delete, and move controls.
 - Add shared slug normalization and mirrored client/server validation.
@@ -524,7 +582,7 @@ Acceptance: the allowlisted staging Admin can navigate the protected shell on de
 
 Acceptance: staging Admin creates three Categories, edits and reorders them, hides/restores one, receives an actionable referenced-delete error, and sees the public read model expose only active rows.
 
-#### 3C — Product list, basic editor, and lifecycle
+#### 3D — Product list, basic editor, and lifecycle
 
 - Implement list filters, stock/minimum-price summaries, create, basic fields, draft save, preview, publish, archive, and restore-to-draft.
 - Enforce first-publication timestamp and immutable published slug.
@@ -533,16 +591,16 @@ Acceptance: staging Admin creates three Categories, edits and reorders them, hid
 
 Acceptance: Admin creates an incomplete draft, edits it, previews it privately, cannot publish until requirements pass, publishes it, cannot change its slug, archives it, and confirms Visitors never see draft/archived data.
 
-#### 3D — Package and Option editor
+#### 3E — Package, Variant, and Duration Option editor
 
-- Implement nested add/edit/deactivate/remove and move controls.
+- Implement nested add/edit/deactivate/remove and move controls across Package, Variant, and Duration Option.
 - Implement integer VND parsing/formatting and compare-at validation.
-- Calculate preview minimum price and stock from active Options.
+- Calculate preview minimum price and stock from fully active Duration Options.
 - Make Package removal impact explicit and prevent invalid published states.
 
-Acceptance: one Product contains at least two Packages and multiple duration/price Options; ordering persists; invalid prices are rejected; an out-of-stock Option remains visible but is not purchasable.
+Acceptance: one Product contains at least two Packages; a Package contains multiple Variants; a Variant contains 1-, 3-, and 12-month Duration Options; ordering persists; invalid prices are rejected; an out-of-stock Duration Option remains visible but is not selectable.
 
-#### 3E — Structured content
+#### 3F — Structured content
 
 - Add the allowlisted editor schema and versioned JSON serialization.
 - Sanitize paste, validate links, define visual-empty detection, and build the shared public renderer.
@@ -550,7 +608,7 @@ Acceptance: one Product contains at least two Packages and multiple duration/pri
 
 Acceptance: Admin authors formatted content, reloads without loss, previews the exact public rendering, and unsupported/unsafe content cannot be stored or rendered.
 
-#### 3F — Cloudinary media
+#### 3G — Cloudinary media
 
 - Add shared MIME, 5 MB, role, gallery-count, and environment-prefix constraints.
 - Implement signed upload ticket, direct browser upload, signed response verification, and media persistence.
@@ -559,7 +617,7 @@ Acceptance: Admin authors formatted content, reloads without loss, previews the 
 
 Acceptance: staging Admin uploads/replaces/deletes real assets only under `cynex/staging`; database metadata and Cloudinary state stay consistent across success and tested failure paths.
 
-#### 3G — Merchandising and Contact Channels
+#### 3H — Merchandising and Contact Channels
 
 - Implement featured Product and homepage Category selection/order with invariant feedback.
 - Implement Zalo/Facebook enablement, HTTPS URL validation, and message preview.
@@ -567,7 +625,7 @@ Acceptance: staging Admin uploads/replaces/deletes real assets only under `cynex
 
 Acceptance: Admin configures at least one Contact Channel, reorders featured Products and three homepage Categories, and cannot invalidate a referenced or purchase-critical configuration.
 
-#### 3H — Phase 3 staging acceptance
+#### 3I — Phase 3 staging acceptance
 
 - Run lint, typecheck, unit, database, integration, and production build gates.
 - Run complete Admin E2E with the real staging Admin and RLS.
@@ -575,7 +633,7 @@ Acceptance: Admin configures at least one Contact Channel, reorders featured Pro
 - Record screenshots at 360, 768, 1280, and 1440 widths.
 - Update `PROJECT_STATUS.md`, `CHANGELOG.md`, applicable runbooks, and any genuinely new ADR.
 
-Phase 3 gate: Admin creates a Claude Product with two Packages and multiple Options, authors rich content, uploads media, publishes, changes price/stock, reorders merchandising, previews contact text, archives the Product, and logs out. Anonymous/non-admin authorization checks pass throughout and no test fixture is left unintentionally in staging.
+Phase 3 gate: Admin creates Claude → Claude Team → 1.5x Pro → 1/3/12-month Duration Options, adds another Package/Variant path, authors rich content, uploads media, publishes, changes price/stock, reorders merchandising, previews contact text, archives the Product, and logs out. Anonymous/non-admin authorization checks pass throughout and no test fixture is left unintentionally in staging.
 
 ### Phase 4 — Storefront
 
@@ -588,7 +646,7 @@ Phase 3 gate: Admin creates a Claude Product with two Packages and multiple Opti
 #### 4B — Reusable discovery components
 
 - Implement Category navigation, Product card, price/stock presentation, grid, skeleton, empty/error state, filter controls, mobile drawer, sort, and pagination.
-- Verify minimum price and availability exactly match database search results.
+- Verify minimum price and availability exactly match active Duration Options through active Package/Variant paths in database search results.
 
 #### 4C — Catalog, search, and Category routes
 
@@ -598,7 +656,7 @@ Phase 3 gate: Admin creates a Claude Product with two Packages and multiple Opti
 
 #### 4D — Product detail and selection
 
-- Implement breadcrumbs, responsive gallery, rich content renderer, Package/Option selection, related Products, sticky summary, and mobile CTA.
+- Implement breadcrumbs, responsive gallery, rich content renderer, Package/Variant/Duration Option selection, related Products, sticky summary, and mobile CTA.
 - Cover no-media, no-price, partial-stock, all-out-of-stock, and Product-hidden states.
 
 #### 4E — Contact handoff
@@ -612,7 +670,7 @@ Phase 3 gate: Admin creates a Claude Product with two Packages and multiple Opti
 - Implement hero search, active Category shortcuts, featured Products, up to three shelves, purchase process, selected Landing trust content, FAQ, final CTA, and footer.
 - Validate reduced motion, keyboard flows, responsive screenshots, slow/error states, and navigation from homepage through purchase handoff.
 
-Phase 4 gate: on staging, a Visitor can start at the homepage, search for Claude with or without Vietnamese diacritics where relevant, filter/sort results, open the Product, select the intended Package and in-stock Option, verify duration/price, copy the accurate contact message, and open each configured channel on mobile and desktop.
+Phase 4 gate: on staging, a Visitor can start at the homepage, search for Claude with or without Vietnamese diacritics where relevant, filter/sort results, open the Product, select Claude Team → 1.5x Pro → an in-stock duration, verify duration/price, copy the accurate four-level contact message, and open each configured channel on mobile and desktop.
 
 ### Phase 5 — Merchandising, SEO and Analytics
 
@@ -679,9 +737,9 @@ pnpm test:db
 pnpm build
 ```
 
-Database acceptance covers anonymous published-only reads, draft isolation, non-admin denial, Admin CRUD, price/homepage constraints, and diacritic-insensitive search. Integration acceptance covers Auth lifecycle, loaders/actions, search, publish flow, Cloudinary failures, and session expiration.
+Database acceptance covers anonymous published-only reads through the complete hierarchy, draft isolation, non-admin denial, Admin CRUD, price/homepage constraints, and diacritic-insensitive Product/Package/Variant/Duration Option search. Integration acceptance covers Auth lifecycle, loaders/actions, search, publish flow, Cloudinary failures, and session expiration.
 
-Public E2E follows homepage → Claude search → product → Package → Option → price → copied contact message → Zalo/Facebook. Admin E2E follows login → Category → Product draft → media → Package/Options → publish → price/stock update → merchandising → archive → logout.
+Public E2E follows homepage → Claude search → Product → Claude Team Package → 1.5x Pro Variant → duration/price Option → copied contact message → Zalo/Facebook. Admin E2E follows login → Category → Product draft → media → Package → Variant → Duration Options → publish → price/stock update → merchandising → archive → logout.
 
 Quality targets before cutover:
 

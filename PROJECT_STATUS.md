@@ -10,26 +10,26 @@ Last updated: 2026-09-12
 - Runtime: Node 22, pnpm 10.24.0.
 - CI: `quality` passes on `main` and `develop`.
 - Deployment: staging and production Workers Builds, isolated runtime variables, and automatic deployments are accepted end to end. Production has no custom route.
-- Data: Phase 2 schema, constraints, RLS, search RPC, generated types, and Auth are accepted locally and on staging. Production migrations remain intentionally deferred.
+- Data: Phase 2's original three-level schema, constraints, RLS, search RPC, generated types, and Auth were accepted locally and on staging. The newly accepted Product → Package → Variant → Duration Option requirement now needs a forward staging migration before Product editor work. Production migrations remain intentionally unapplied.
 - Production safety: the existing landing deployment remains untouched.
-- Planning: `docs/PROJECT_PLAN.md` contains the complete Storefront/Admin functional specification, UX states, implementation slices, and acceptance gates through cutover.
+- Planning: `docs/PRODUCT_UX_SPEC.md` defines product direction, users, journeys, Discovery Onboarding, four-level Selection, screen states, content, measurement, and acceptance scenarios. `docs/PROJECT_PLAN.md` defines implementation and delivery through cutover.
 
 ## Current work
 
-Implement Admin category and product CRUD against the accepted Supabase schema without expanding into public Storefront work.
+Begin Phase 3 with the four-level Catalog hierarchy amendment, then implement the shared Admin shell and Category CRUD without expanding into public Storefront work.
 
 ## Next gate
 
-Phase 3 is complete when an Admin can manage categories, products, packages, options, rich text, media, and publish states on staging under the existing RLS policies.
+Phase 3 is complete when an Admin can manage Categories, Products, Packages, Variants, Duration Options, rich text, media, and publish states on staging under the amended RLS policies.
 
 ## Documentation rule
 
-Every accepted change updates this snapshot and `CHANGELOG.md` in the same Pull Request. Keep current truth here, canonical vocabulary in `CONTEXT.md`, implementation plan in `docs/PROJECT_PLAN.md`, decisions in `docs/adr/`, and procedures in runbooks.
+Every accepted change updates this snapshot and `CHANGELOG.md` in the same Pull Request. Keep current truth here, canonical vocabulary in `CONTEXT.md`, product/interaction intent in `docs/PRODUCT_UX_SPEC.md`, implementation plan in `docs/PROJECT_PLAN.md`, decisions in `docs/adr/`, and procedures in runbooks.
 
 ## Handoff
 
 - Work from `/home/obi/Projects/cynex-mvp`, not the landing checkout.
 - Merge this documentation branch into `develop` before starting Phase 3.
 - Start Phase 3 from updated `develop` on a new `feature/*` branch.
-- The first Phase 3 deliveries are `3A` shared Admin shell and `3B` Category CRUD under real RLS; accept each independently before Product work.
+- Phase `3A` is the forward-only four-level hierarchy migration; after its local/staging acceptance, continue with `3B` Admin shell and `3C` Category CRUD.
 - Keep production database migrations and the `cynex.site` Worker route deferred.

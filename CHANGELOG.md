@@ -39,3 +39,6 @@ All notable project changes are recorded here. Current operational truth remains
 - Expanded the plan into a route-by-route Storefront and Admin functional specification covering component contracts, query behavior, lifecycle rules, media flow, error states, accessibility, SEO, consent, performance, security, cutover, and rollback.
 - Split Phases 3–5 into independently acceptable implementation slices with explicit staging gates, and detailed Phase 6 production-data and Phase 7 cutover procedures.
 - Chose Vietnamese canonical public routes (`/san-pham`, `/danh-muc/:slug`, and `/tim-kiem`) while keeping Admin and staging surfaces non-indexed.
+- Accepted Product → Package → Variant → Duration Option as the canonical commercial hierarchy, superseding the original schema that combined Variant and duration in one Option.
+- Added the full Product/UX specification covering direction, product promise, user types/jobs, experience principles, Discovery Onboarding, detailed Visitor/Admin journeys, selector behavior, screen states, content/copy, analytics, accessibility, trust/safety, and acceptance scenarios.
+- Added ADR 0004 and scheduled a forward-only staging schema/RLS/search/test amendment as Phase `3A`; production remains unchanged.

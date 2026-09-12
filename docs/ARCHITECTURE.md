@@ -43,7 +43,8 @@ Category
 └── Product
     ├── ProductMedia
     └── Package
-        └── Option
+        └── Variant
+            └── DurationOption
 
 HomepageFeaturedProduct → published Product
 HomepageCategorySection → active Category
@@ -51,19 +52,19 @@ SiteSettings            → singleton contact configuration
 AppAdmin                → Supabase Auth user allowlist
 ```
 
-The initial schema is defined by four ordered migrations: catalog tables, RLS, search RPC, and catalog invariants. Generated TypeScript types live in `app/types/database.ts`.
+The accepted Phase 2 schema is defined by four ordered migrations: catalog tables, RLS, search RPC, and catalog invariants. It currently stores Variant name and duration together in `options`; the accepted four-level requirement supersedes that shape. The first Phase 3 migration must add `variants`, make Duration Options belong to a Variant, update RLS/search/tests, and regenerate `app/types/database.ts` before Product editor work.
 
 ## Authorization
 
 - Anonymous and authenticated non-admin accounts see only active/published Catalog data.
-- Out-of-stock Options remain readable but are not purchasable.
+- Out-of-stock Duration Options remain readable but are not selectable for contact handoff.
 - Catalog mutations require `auth.uid()` to exist in `app_admins`.
 - Server guards call `getClaims()` and confirm the allowlist row through RLS.
 - Runtime does not use a Supabase secret/service-role key.
 
 ## Search
 
-`catalog_search` is the public query boundary. It supports category, stock, sort, pagination, case-insensitive and Vietnamese diacritic-insensitive matching. It returns only published products and derives minimum price from active, in-stock Options.
+`catalog_search` is the public query boundary. It supports category, stock, sort, pagination, case-insensitive and Vietnamese diacritic-insensitive matching. After the hierarchy migration it searches Product, Package, Variant, and Duration Option labels, returns only published Products, and derives minimum price from active, in-stock Duration Options.
 
 ## Verification
 
