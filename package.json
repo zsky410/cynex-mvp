@@ -10,9 +10,14 @@
 		"build": "react-router build",
 		"build:production": "CLOUDFLARE_ENV=production react-router build",
 		"build:staging": "CLOUDFLARE_ENV=staging react-router build",
+		"db:reset": "supabase db reset",
+		"db:test": "supabase test db",
+		"db:types": "supabase gen types typescript --local > app/types/database.ts",
 		"dev": "react-router dev",
 		"lint": "eslint .",
 		"test": "vitest run --passWithNoTests",
+		"test:auth": "node scripts/test-auth.mjs",
+		"test:db": "supabase test db",
 		"test:e2e": "playwright test",
 		"typecheck": "wrangler types && react-router typegen && tsc -b",
 		"deploy:staging": "pnpm run build:staging && wrangler deploy --env staging",
@@ -22,6 +27,8 @@
 		"postinstall": "wrangler types"
 	},
 	"dependencies": {
+		"@supabase/ssr": "^0.12.7",
+		"@supabase/supabase-js": "^2.116.0",
 		"isbot": "^5.1.36",
 		"react": "^19.2.7",
 		"react-dom": "^19.2.7",

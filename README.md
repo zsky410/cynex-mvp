@@ -76,4 +76,14 @@ pnpm exec supabase start
 pnpm exec supabase stop
 ```
 
+Reset, test, and regenerate types after changing migrations:
+
+```bash
+pnpm db:reset
+pnpm db:test
+pnpm db:types
+```
+
+The database test suite covers schema, catalog constraints, RLS authorization, and the public search RPC. `pnpm test:auth` runs against a local app server and local Supabase, creates disposable Admin/non-admin users, and removes them after the checks.
+
 Copy `.dev.vars.example` to `.dev.vars` and fill local-only values. Never commit `.dev.vars` or credentials.
