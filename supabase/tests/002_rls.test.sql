@@ -1,6 +1,6 @@
 begin;
 
-select plan(10);
+select plan(18);
 
 insert into auth.users (id, instance_id, aud, role, email, created_at, updated_at)
 values
@@ -30,11 +30,18 @@ values
   ('30000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', 'Published package'),
   ('30000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000002', 'Draft package');
 
-insert into public.options (package_id, name, duration_label, price_vnd, is_in_stock)
+insert into public.variants (id, package_id, name, is_active)
 values
-  ('30000000-0000-0000-0000-000000000001', 'Available', '1 month', 100000, true),
-  ('30000000-0000-0000-0000-000000000001', 'Out of stock', '1 month', 100000, false),
-  ('30000000-0000-0000-0000-000000000002', 'Draft option', '1 month', 100000, true);
+  ('40000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'Public variant', true),
+  ('40000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000001', 'Inactive variant', false),
+  ('40000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000002', 'Draft variant', true);
+
+insert into public.options (variant_id, duration_label, price_vnd, is_in_stock)
+values
+  ('40000000-0000-0000-0000-000000000001', '1 month', 100000, true),
+  ('40000000-0000-0000-0000-000000000001', '3 months', 100000, false),
+  ('40000000-0000-0000-0000-000000000002', '6 months', 100000, true),
+  ('40000000-0000-0000-0000-000000000003', '12 months', 100000, true);
 
 set local role anon;
 
@@ -42,6 +49,7 @@ select is((select count(*) from public.categories), 1::bigint, 'anonymous reads 
 select is((select count(*) from public.products), 1::bigint, 'anonymous reads only published products');
 select is((select count(*) from public.product_media), 1::bigint, 'anonymous cannot read draft media');
 select is((select count(*) from public.packages), 1::bigint, 'anonymous cannot read draft packages');
+select is((select count(*) from public.variants), 1::bigint, 'anonymous reads only variants on a complete active public path');
 select is((select count(*) from public.options), 2::bigint, 'out-of-stock options remain public');
 select is((select count(*) from public.app_admins), 0::bigint, 'anonymous cannot read admin allowlist');
 select throws_ok(
@@ -49,6 +57,12 @@ select throws_ok(
   '42501',
   null,
   'anonymous cannot mutate catalog'
+);
+select throws_ok(
+  $$insert into public.variants (package_id, name) values ('30000000-0000-0000-0000-000000000001', 'Forbidden')$$,
+  '42501',
+  null,
+  'anonymous cannot mutate variants'
 );
 
 reset role;
@@ -61,6 +75,12 @@ select throws_ok(
   null,
   'non-admin cannot mutate catalog'
 );
+select throws_ok(
+  $$insert into public.variants (package_id, name) values ('30000000-0000-0000-0000-000000000001', 'Forbidden')$$,
+  '42501',
+  null,
+  'non-admin cannot mutate variants'
+);
 
 reset role;
 set local role authenticated;
@@ -71,6 +91,23 @@ select lives_ok(
   'allowlisted admin can mutate catalog'
 );
 select is((select count(*) from public.products), 2::bigint, 'admin can read draft products');
+select is((select count(*) from public.variants), 3::bigint, 'admin can read inactive and draft variants');
+select lives_ok(
+  $$insert into public.variants (package_id, name) values ('30000000-0000-0000-0000-000000000001', 'Admin variant')$$,
+  'allowlisted admin can create variants'
+);
+select lives_ok(
+  $$update public.variants set name = 'Updated variant' where id = '40000000-0000-0000-0000-000000000001'$$,
+  'allowlisted admin can update variants'
+);
+select lives_ok(
+  $$delete from public.variants where name = 'Admin variant'$$,
+  'allowlisted admin can delete variants'
+);
+select lives_ok(
+  $$insert into public.options (variant_id, duration_label, price_vnd) values ('40000000-0000-0000-0000-000000000001', '24 months', 200000)$$,
+  'allowlisted admin can create duration options'
+);
 
 select * from finish();
 rollback;

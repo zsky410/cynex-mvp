@@ -187,6 +187,21 @@ Application acceptance must use a real staging login and verified cookie flow. D
 - No secret appears in response HTML, built assets, browser logs, or error messages.
 - Cloudinary operations, when in scope, remain under `cynex/staging`.
 
+For Phase 3A Catalog role acceptance, run `pnpm test:staging-roles`. The script
+uses only the staging URL, publishable key, and real Admin/non-admin Email/Password
+sessions. It reads `STAGING_SUPABASE_URL`, `STAGING_SUPABASE_PUBLISHABLE_KEY`,
+`STAGING_ADMIN_EMAIL`, `STAGING_ADMIN_PASSWORD`, `STAGING_NON_ADMIN_EMAIL`, and
+`STAGING_NON_ADMIN_PASSWORD` from the process environment, or prompts without
+echoing password/key input in an interactive terminal. Do not persist these values
+in shell history or project files. The script creates only prefixed disposable
+Catalog fixtures and cleans them through the real Admin session.
+
+The non-admin account used by this check must be an explicitly temporary staging
+Auth identity that is not present in `app_admins`. Remove it from staging Auth
+after the script passes and fixture cleanup is confirmed. A passing run must show
+Admin create/update/delete and non-admin denial for both Variant and Duration
+Option, followed by `ok - all staging fixtures cleaned`.
+
 ## 12. Fixtures and cleanup
 
 - Prefix temporary records with a recognizable acceptance marker.

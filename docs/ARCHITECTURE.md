@@ -52,7 +52,7 @@ SiteSettings            → singleton contact configuration
 AppAdmin                → Supabase Auth user allowlist
 ```
 
-The accepted Phase 2 schema is defined by four ordered migrations: catalog tables, RLS, search RPC, and catalog invariants. It currently stores Variant name and duration together in `options`; the accepted four-level requirement supersedes that shape. The first Phase 3 migration must add `variants`, make Duration Options belong to a Variant, update RLS/search/tests, and regenerate `app/types/database.ts` before Product editor work.
+The accepted Phase 2 schema is defined by four ordered migrations: catalog tables, RLS, search RPC, and catalog invariants. Phase 3A adds `variants`, deterministically groups each legacy Package's Options by trimmed Variant name, makes every Duration Option belong to one Variant, removes the superseded `options.package_id` and `options.name` columns, and updates RLS/search/types. The migration is applied locally and on staging; production remains unapplied.
 
 ## Authorization
 
@@ -64,7 +64,7 @@ The accepted Phase 2 schema is defined by four ordered migrations: catalog table
 
 ## Search
 
-`catalog_search` is the public query boundary. It supports category, stock, sort, pagination, case-insensitive and Vietnamese diacritic-insensitive matching. After the hierarchy migration it searches Product, Package, Variant, and Duration Option labels, returns only published Products, and derives minimum price from active, in-stock Duration Options.
+`catalog_search` is the public query boundary. It supports category, stock, sort, pagination, case-insensitive and Vietnamese diacritic-insensitive matching. It searches Product, Package, active Variant, and active Duration Option text, returns only published Products, and derives minimum price from active, in-stock Duration Options through active Package and Variant parents.
 
 ## Verification
 

@@ -17,6 +17,7 @@
 		"lint": "eslint .",
 		"test": "vitest run --passWithNoTests",
 		"test:auth": "node scripts/test-auth.mjs",
+		"test:staging-roles": "node scripts/test-staging-catalog-roles.mjs",
 		"test:db": "supabase test db",
 		"test:e2e": "playwright test",
 		"typecheck": "wrangler types && react-router typegen && tsc -b",
