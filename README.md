@@ -61,6 +61,8 @@ pnpm deploy:staging
 pnpm deploy:production
 ```
 
+The environment must be selected during the build, not only during deploy. For Cloudflare Workers Builds use `pnpm build:staging` for `develop` and `pnpm build:production` for `main`.
+
 ## Styling
 
 This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
