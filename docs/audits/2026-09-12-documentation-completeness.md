@@ -41,7 +41,7 @@ No credential value from the Landing plaintext inventory was copied into this re
 | Cutover, monitoring, rollback, roll-forward | Release cutover runbook | Covered; execution deferred |
 | Documentation ownership/update rules | `docs/README.md`, `AGENTS.md` | Covered |
 | Historical accepted changes | `CHANGELOG.md` | Covered |
-| Credential safety | `AGENTS.md`, status, infrastructure/database/release runbooks | Covered; manual rotation/removal action pending |
+| Credential safety | `AGENTS.md`, status, infrastructure/database/release runbooks | Covered; owner accepted retaining the untracked plaintext inventory without rotation |
 
 ## Contradictions resolved
 
@@ -55,7 +55,7 @@ No credential value from the Landing plaintext inventory was copied into this re
 
 ## Known actions, not documentation omissions
 
-- Owner must rotate credentials previously stored in the Landing's untracked plaintext inventory, update provider stores/password manager, remove the file, and run a secret scan before remote Phase 3 work.
+- Owner explicitly accepted retaining the Landing's untracked plaintext credential inventory without rotation. This no longer blocks Phase 3; the file must remain untracked and must not enter project artifacts or communication.
 - User must merge `feature/complete-phase-2` into `develop` before creating the next Phase 3 branch.
 - Phase 3A must implement and staging-accept the four-level forward migration; documentation alone does not change the database.
 - Cloudinary operational endpoints/tests and related troubleshooting details will be documented with Phase 3G implementation because exact request/response contracts do not exist yet.
@@ -64,4 +64,4 @@ No credential value from the Landing plaintext inventory was copied into this re
 
 ## Handoff conclusion
 
-The repository now contains enough durable context to begin a fresh chat from `/home/obi/Projects/cynex-mvp` without relying on this conversation. The immediate order is: complete credential rotation/removal, merge the documentation branch into `develop`, create a new Phase 3 feature branch, then implement Phase 3A using ADR 0004 and the staging database runbook.
+The repository now contains enough durable context to begin a fresh chat from `/home/obi/Projects/cynex-mvp` without relying on this conversation. The immediate order is: merge the credential-risk decision documentation into `develop`, create a new Phase 3 feature branch, then implement Phase 3A using ADR 0004 and the staging database runbook.

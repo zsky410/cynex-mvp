@@ -47,3 +47,4 @@ All notable project changes are recorded here. Current operational truth remains
 - Added a complete infrastructure/environment runbook and recorded the required manual rotation/removal of the plaintext credential inventory before further remote Phase 3 work.
 - Expanded the staging database runbook from a short checklist into local/dry-run/push/types/RLS/Auth/cleanup/evidence/failure gates.
 - Added a production readiness, cutover, monitoring, routing rollback, and roll-forward runbook while keeping execution deferred to approved Phases 6–7.
+- Recorded the owner's explicit decision to retain the separate Landing checkout's untracked plaintext credential inventory without rotation; the accepted risk no longer blocks Phase 3, while the file remains prohibited from Git, builds, docs, logs, Pull Requests, and future chat.
