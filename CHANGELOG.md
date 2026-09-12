@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here. Current operational truth remains in `PROJECT_STATUS.md`.
 
+## 2026-09-13
+
+### Phase 3C — Category CRUD and ordering
+
+- Added the protected Category list with name/slug search, active-state filtering, Product counts, responsive rows, and explicit empty/error/success states.
+- Added create/edit forms with Vietnamese slug normalization, mirrored client/server validation, HTTPS image validation, and field-level duplicate-slug feedback.
+- Added hide/restore, guarded delete with named confirmation, Vietnamese homepage/Product reference errors, and transactional move-up/down controls through an invoker RLS RPC.
+- Added unit, pgTAP, and disposable-user HTTP acceptance covering Admin mutations through cookie session and Origin validation, authenticated non-admin RLS denial, constraints, ordering, and complete fixture cleanup.
+- Dry-ran and applied only `20260912235500_category_reorder.sql` to staging; hosted lint, generated types, and the post-push dry-run passed. Production remained unchanged.
+- Kept Phase 3D Product CRUD, public Storefront work, and production changes out of scope; staging UI acceptance remains the post-merge gate.
+
 ## 2026-09-12
 
 ### Phase 3B — Shared Admin application shell

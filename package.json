@@ -17,6 +17,7 @@
 		"lint": "eslint .",
 		"test": "vitest run --passWithNoTests",
 		"test:auth": "node scripts/test-auth.mjs",
+		"test:categories": "node scripts/test-category-crud.mjs",
 		"test:staging-roles": "node scripts/test-staging-catalog-roles.mjs",
 		"test:db": "supabase test db",
 		"test:e2e": "playwright test",

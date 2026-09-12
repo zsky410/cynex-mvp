@@ -1,6 +1,6 @@
 begin;
 
-select plan(9);
+select plan(11);
 
 insert into public.categories (id, name, slug, icon_key, is_active)
 values
@@ -72,6 +72,23 @@ select throws_ok(
   '23514',
   null,
   'homepage cannot feature an inactive category'
+);
+
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-000000000099';
+select throws_ok(
+  $$select public.admin_move_category('12000000-0000-0000-0000-000000000001', 'down')$$,
+  'P0002',
+  null,
+  'non-admin cannot reorder categories'
+);
+reset role;
+
+select throws_ok(
+  $$select public.admin_move_category('12000000-0000-0000-0000-000000000001', 'sideways')$$,
+  '22023',
+  null,
+  'category reorder rejects invalid direction'
 );
 
 select * from finish();

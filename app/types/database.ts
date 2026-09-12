@@ -436,6 +436,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_move_category: {
+        Args: { move_direction: string; target_id: string }
+        Returns: undefined
+      }
       catalog_search: {
         Args: {
           category_slug?: string
