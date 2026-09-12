@@ -9,13 +9,13 @@ Last updated: 2026-09-12
 - Protected branches: `main` and `develop` require Pull Requests and the `quality` check.
 - Runtime: Node 22, pnpm 10.24.0.
 - CI: `quality` passes on `main` and `develop`.
-- Deployment: staging Workers Builds and isolated runtime variables are configured and accepted end to end. `staging.cynex.site` is active; its `workers.dev` and Preview URLs are disabled. Production Workers Builds and runtime variables are not configured yet, and production has no custom route.
+- Deployment: staging Workers Builds and isolated runtime variables are accepted end to end. Production Workers Builds is connected to `main`; its first automatic deployment and runtime variables are pending. Production has no custom route.
 - Data: staging and production Supabase projects exist; schema implementation has not started.
 - Production safety: the existing landing deployment remains untouched.
 
 ## Current work
 
-Connect production Workers Builds to `main`, configure its isolated runtime variables, and verify the production Worker without assigning `cynex.site`.
+Validate the first production deployment through GitHub CI and Cloudflare Workers Builds while keeping the production Worker detached from `cynex.site`.
 
 ## Next gate
 
@@ -42,3 +42,4 @@ Every accepted change updates this file in the same Pull Request. Keep current t
 - Configured Wrangler to preserve dashboard-managed runtime variables across deployments.
 - Connected staging Workers Builds and configured its isolated runtime variables; started the first automatic deployment acceptance run.
 - Accepted the first automatic staging deployment: GitHub `quality` passed, Cloudflare deployed the merge from `develop`, crawler protections remained active, the Cloudinary secret was preserved, and the landing stayed reachable.
+- Connected production Workers Builds to `main` and started its first automatic deployment acceptance run.
