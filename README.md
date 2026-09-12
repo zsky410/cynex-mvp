@@ -2,6 +2,8 @@
 
 A full-stack storefront for browsing Cynex premium app products and contacting support to purchase a selected package option.
 
+Project vocabulary and current delivery state live in [CONTEXT.md](./CONTEXT.md) and [PROJECT_STATUS.md](./PROJECT_STATUS.md). Every accepted change must update `PROJECT_STATUS.md` in the same Pull Request.
+
 ## Features
 
 - 🚀 Server-side rendering
