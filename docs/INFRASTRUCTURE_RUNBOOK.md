@@ -53,7 +53,7 @@ Store these separately for staging and production in a password manager:
 
 Do not use one database/Admin password across environments. Never copy the staging Admin UUID into production because Auth identities are environment-specific.
 
-Known required manual security action: the Landing checkout contains an untracked local plaintext credential inventory file. Before Phase 3 remote changes, rotate every credential that appeared in that file, update the password manager/provider secret stores, then securely remove the local plaintext file. Do not commit the file or its contents. Verify both repositories with a secret scan afterward.
+Accepted owner decision as of 2026-09-12: the Landing checkout's untracked local plaintext credential inventory will remain in place and its credentials will not be rotated. This accepted risk does not block Phase 3. The file must remain untracked and outside all application/runtime/build inputs; never commit, copy, print, quote, upload, screenshot, or reproduce its values. Revisit rotation immediately if the file becomes tracked, shared, backed up to an untrusted location, or otherwise exposed beyond the owner's local machine.
 
 ## 4. Repository and branch controls
 
