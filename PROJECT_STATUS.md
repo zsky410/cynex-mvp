@@ -15,7 +15,7 @@ Last updated: 2026-09-12
 
 ## Current work
 
-Preserve dashboard-managed runtime variables across Wrangler deploys. After this change passes CI and merges into `develop`, connect Cloudflare Workers Builds and configure each environment's variables and secrets.
+Run the first end-to-end staging deployment through GitHub CI and Cloudflare Workers Builds.
 
 ## Next gate
 
@@ -40,3 +40,4 @@ Every accepted change updates this file in the same Pull Request. Keep current t
 - Declared `staging.cynex.site` as the staging custom domain and an empty production route list in version-controlled Wrangler configuration.
 - Verified `staging.cynex.site` over HTTPS with its crawler protections, no GA4, and no secret markers; the staging `workers.dev` and Preview URLs are disabled.
 - Configured Wrangler to preserve dashboard-managed runtime variables across deployments.
+- Connected staging Workers Builds and configured its isolated runtime variables; started the first automatic deployment acceptance run.
