@@ -32,7 +32,10 @@ async function login(email) {
   return fetch(`${app}/admin/login`, {
     method: "POST",
     redirect: "manual",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Origin: app,
+    },
     body: new URLSearchParams({ email, password }),
   });
 }
@@ -61,16 +64,40 @@ try {
     redirect: "manual",
     headers: { Cookie: cookie },
   });
+  const anonymousPage = await fetch(`${app}/admin`, { redirect: "manual" });
+  const expiredPage = await fetch(`${app}/admin`, {
+    redirect: "manual",
+    headers: { Cookie: "sb-local-auth-token=expired" },
+  });
+  const invalidOrigin = await fetch(`${app}/admin/logout`, {
+    method: "POST",
+    redirect: "manual",
+    headers: { Cookie: cookie, Origin: "https://attacker.example" },
+  });
   const logout = await fetch(`${app}/admin/logout`, {
     method: "POST",
     redirect: "manual",
-    headers: { Cookie: cookie },
+    headers: { Cookie: cookie, Origin: app },
   });
   const nonAdminLogin = await login(nonAdmin.email);
 
   const checks = {
     adminLogin: adminLogin.status === 302 && redirectsTo(adminLogin, "/admin"),
     adminGuard: adminPage.status === 200,
+    adminPrivateCache:
+      adminPage.headers.get("cache-control") === "private, no-store",
+    adminRobotsHeader:
+      adminPage.headers.get("x-robots-tag") === "noindex, nofollow, noarchive",
+    adminRobotsMeta: (await adminPage.text()).includes(
+      'name="robots" content="noindex, nofollow, noarchive"',
+    ),
+    anonymousDenied:
+      anonymousPage.status === 302 && redirectsTo(anonymousPage, "/admin/login"),
+    expiredSession:
+      expiredPage.status === 302 &&
+      new URL(expiredPage.headers.get("location"), app).searchParams.get("reason") ===
+        "session-expired",
+    invalidOrigin: invalidOrigin.status === 403,
     logout: logout.status === 302 && redirectsTo(logout, "/admin/login"),
     nonAdmin: nonAdminLogin.status === 403,
   };

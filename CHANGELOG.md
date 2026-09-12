@@ -4,6 +4,14 @@ All notable project changes are recorded here. Current operational truth remains
 
 ## 2026-09-12
 
+### Phase 3B — Shared Admin application shell
+
+- Added a responsive protected Admin layout with desktop sidebar, keyboard-safe mobile navigation, active-route states, environment badge, Admin identifier, and logout.
+- Added reusable breadcrumbs, page heading/action area, loading, empty, error, notification, and confirmation-dialog primitives without implementing Category CRUD or public Storefront routes.
+- Centralized verified Admin loader/action guards, same-origin mutation validation, allowlist/backend failure handling, session-expired and non-admin redirects, and private/no-store/noindex response headers.
+- Added unit and disposable-user HTTP acceptance for Admin access, anonymous/non-admin denial, logout, expired sessions, Origin rejection, cache/robots behavior, and keyboard focus trapping/restoration.
+- Accepted the shell locally at desktop/mobile widths using Node 22; staging deployment acceptance remains the post-merge gate and production remains unchanged.
+
 ### Phase 3A — Four-level Catalog hierarchy
 
 - Added the forward-only `variants` table between Packages and Duration Options with ordering, active state, timestamps, grants, and allowlist-backed RLS.
