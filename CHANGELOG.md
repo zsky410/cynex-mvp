@@ -32,3 +32,10 @@ All notable project changes are recorded here. Current operational truth remains
 - Reviewed and applied four migrations to staging; remote lint and anonymous Data API/RPC/mutation checks passed.
 - Allowlisted and accepted the real staging Admin login, guard, and logout flow.
 - Left production database migrations intentionally unapplied.
+
+### Documentation and Phase 3 handoff
+
+- Consolidated current status, canonical vocabulary, architecture, runbook, decisions, and the full delivery plan inside the `cynex-mvp` repository.
+- Expanded the plan into a route-by-route Storefront and Admin functional specification covering component contracts, query behavior, lifecycle rules, media flow, error states, accessibility, SEO, consent, performance, security, cutover, and rollback.
+- Split Phases 3–5 into independently acceptable implementation slices with explicit staging gates, and detailed Phase 6 production-data and Phase 7 cutover procedures.
+- Chose Vietnamese canonical public routes (`/san-pham`, `/danh-muc/:slug`, and `/tim-kiem`) while keeping Admin and staging surfaces non-indexed.

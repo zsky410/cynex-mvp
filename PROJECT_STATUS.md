@@ -12,6 +12,7 @@ Last updated: 2026-09-12
 - Deployment: staging and production Workers Builds, isolated runtime variables, and automatic deployments are accepted end to end. Production has no custom route.
 - Data: Phase 2 schema, constraints, RLS, search RPC, generated types, and Auth are accepted locally and on staging. Production migrations remain intentionally deferred.
 - Production safety: the existing landing deployment remains untouched.
+- Planning: `docs/PROJECT_PLAN.md` contains the complete Storefront/Admin functional specification, UX states, implementation slices, and acceptance gates through cutover.
 
 ## Current work
 
@@ -30,5 +31,5 @@ Every accepted change updates this snapshot and `CHANGELOG.md` in the same Pull 
 - Work from `/home/obi/Projects/cynex-mvp`, not the landing checkout.
 - Merge this documentation branch into `develop` before starting Phase 3.
 - Start Phase 3 from updated `develop` on a new `feature/*` branch.
-- The first Phase 3 slice is the shared Admin shell plus Category CRUD under real RLS.
+- The first Phase 3 deliveries are `3A` shared Admin shell and `3B` Category CRUD under real RLS; accept each independently before Product work.
 - Keep production database migrations and the `cynex.site` Worker route deferred.

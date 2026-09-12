@@ -2,7 +2,7 @@
 
 A full-stack storefront for browsing Cynex premium app products and contacting support to purchase a selected package option.
 
-Start with [PROJECT_STATUS.md](./PROJECT_STATUS.md), then read the [project plan](./docs/PROJECT_PLAN.md), [architecture](./docs/ARCHITECTURE.md), and [domain vocabulary](./CONTEXT.md). Historical changes live in [CHANGELOG.md](./CHANGELOG.md). Agent workflow and boundaries are in [AGENTS.md](./AGENTS.md).
+Start with [PROJECT_STATUS.md](./PROJECT_STATUS.md), then read the [complete Storefront MVP functional and delivery plan](./docs/PROJECT_PLAN.md), [architecture](./docs/ARCHITECTURE.md), and [domain vocabulary](./CONTEXT.md). The plan is the implementation source of truth for every public/Admin route, UX state, delivery slice, acceptance gate, cutover, and rollback. Historical changes live in [CHANGELOG.md](./CHANGELOG.md). Agent workflow and boundaries are in [AGENTS.md](./AGENTS.md).
 
 ## Current delivery status
 
