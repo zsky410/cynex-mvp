@@ -13,10 +13,17 @@
 	"upload_source_maps": true,
 	"env": {
 		"staging": {
-			"name": "cynex-mvp-staging"
+			"name": "cynex-mvp-staging",
+			"routes": [
+				{
+					"pattern": "staging.cynex.site",
+					"custom_domain": true
+				}
+			]
 		},
 		"production": {
-			"name": "cynex-mvp-production"
+			"name": "cynex-mvp-production",
+			"routes": []
 		}
 	}
 	/**
