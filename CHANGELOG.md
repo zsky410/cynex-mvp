@@ -10,7 +10,9 @@ All notable project changes are recorded here. Current operational truth remains
 - Added reusable breadcrumbs, page heading/action area, loading, empty, error, notification, and confirmation-dialog primitives without implementing Category CRUD or public Storefront routes.
 - Centralized verified Admin loader/action guards, same-origin mutation validation, allowlist/backend failure handling, session-expired and non-admin redirects, and private/no-store/noindex response headers.
 - Added unit and disposable-user HTTP acceptance for Admin access, anonymous/non-admin denial, logout, expired sessions, Origin rejection, cache/robots behavior, and keyboard focus trapping/restoration.
-- Accepted the shell locally at desktop/mobile widths using Node 22; staging deployment acceptance remains the post-merge gate and production remains unchanged.
+- Accepted the shell locally at desktop/mobile widths using Node 22.
+- Accepted merge commit `658c408` on staging: anonymous access redirected to login; the real Admin passed login, desktop/mobile navigation, `STAGING` badge, keyboard focus, logout, and old-session invalidation; authenticated non-admin access was denied and the temporary test identity was deleted.
+- Closed Phase 3B with production unchanged; Phase 3C remains unimplemented and is the next feature slice.
 
 ### Phase 3A — Four-level Catalog hierarchy
 

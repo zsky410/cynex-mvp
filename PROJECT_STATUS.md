@@ -4,7 +4,7 @@ Last updated: 2026-09-12
 
 ## Current state
 
-- Current phase: Phase 3 — Admin catalog (Phase 3B code-complete and locally accepted).
+- Current phase: Phase 3 — Admin catalog (Phase 3B complete and accepted on staging; Phase 3C next).
 - Repository: `zsky410/cynex-mvp` (public by owner decision).
 - Protected branches: `main` and `develop` require Pull Requests and the `quality` check.
 - Runtime: Node 22, pnpm 10.24.0.
@@ -21,7 +21,7 @@ On 2026-09-12, the owner explicitly chose not to rotate or remove the credential
 
 ## Current work
 
-Review and merge Phase 3B, verify the deployed shell with the real staging Admin and non-admin, then begin Phase 3C Category CRUD. Public Storefront work remains deferred.
+Merge the Phase 3B staging-acceptance record, then begin Phase 3C Category CRUD on a new feature branch. Public Storefront work remains deferred.
 
 ## Next gate
 
@@ -34,11 +34,12 @@ Every accepted change updates this snapshot and `CHANGELOG.md` in the same Pull 
 ## Handoff
 
 - Work from `/home/obi/Projects/cynex-mvp`, not the landing checkout.
-- Phase 3B work is on `feature/phase-3b-admin-shell`, created from `develop` after Phase 3A merge commit `13e478c`.
+- This documentation-only acceptance record is on `docs/record-phase-3b-staging-acceptance`, created from `develop` at Phase 3B merge commit `658c408`.
 - Phase `3A` is complete. Migration `20260912220000_add_variants.sql` is applied to staging. Local reset, 60 pgTAP assertions, database lint, application gates, forward-data backfill rehearsal, staging dry-run/push/lint, remote type synchronization, and anonymous Data API/RPC/mutation checks passed.
 - Real staging role acceptance passed through the Supabase publishable client: authenticated non-admin Variant/Duration Option create, update, and delete were denied; the allowlisted Admin completed create, update, and delete for both entity types under RLS. All prefixed Catalog fixtures were cleaned and the temporary non-admin Auth identity was removed afterward.
 - Phase `3B` implements the protected responsive Admin layout, desktop/mobile navigation, environment identity, breadcrumbs/headings, logout, shared state/confirmation/notification primitives, centralized verified loader/action guards, same-origin mutation checks, private/no-store/noindex responses, and explicit unauthorized/session/backend-failure behavior.
 - Phase `3B` local acceptance passed on Node 22: 13 Vitest assertions plus 10 disposable-user HTTP Auth checks cover Admin access, anonymous/non-admin denial, session expiry, logout, Origin rejection, cache/robots behavior, and keyboard focus management. Desktop/mobile render inspection and the Impeccable detector passed. No Category CRUD or public Storefront implementation is included.
-- After merge and automatic staging deployment, complete the real staging Admin/non-admin navigation/session acceptance before starting `3C`.
+- Phase `3B` staging acceptance passed from merge commit `658c408`: anonymous access redirects to login; the real allowlisted Admin can sign in, use desktop/mobile navigation, identify the `STAGING` environment, operate keyboard focus, log out, and cannot reuse the old session; an authenticated non-admin is denied and its temporary Auth identity was removed after acceptance.
+- Phase `3B` is closed. Start `3C` Category CRUD only after this documentation branch merges into `develop`.
 - Phase 4A must follow `docs/LANDING_DESIGN_AUDIT_RUNBOOK.md`: audit a detached clean worktree at verified tag `landing-v1-stable`, create screenshot/report evidence, then port only approved assets/tokens/components.
 - Keep production database migrations and the `cynex.site` Worker route deferred.
