@@ -7,6 +7,7 @@
 	"name": "cynex-mvp",
 	"compatibility_date": "2026-09-11",
 	"main": "./workers/app.ts",
+	"keep_vars": true,
 	"observability": {
 		"enabled": true
 	},

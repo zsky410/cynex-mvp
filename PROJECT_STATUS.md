@@ -15,7 +15,7 @@ Last updated: 2026-09-12
 
 ## Current work
 
-The deploy-script and custom-domain changes must pass CI and merge into `develop`. Cloudflare Workers Builds and environment variables must then be configured and verified.
+Preserve dashboard-managed runtime variables across Wrangler deploys. After this change passes CI and merges into `develop`, connect Cloudflare Workers Builds and configure each environment's variables and secrets.
 
 ## Next gate
 
@@ -39,3 +39,4 @@ Every accepted change updates this file in the same Pull Request. Keep current t
 - Remotely verified both Workers return HTTP 200, staging is non-indexable, production is not marked `noindex`, and the existing `cynex.site` landing remains reachable.
 - Declared `staging.cynex.site` as the staging custom domain and an empty production route list in version-controlled Wrangler configuration.
 - Verified `staging.cynex.site` over HTTPS with its crawler protections, no GA4, and no secret markers; the staging `workers.dev` and Preview URLs are disabled.
+- Configured Wrangler to preserve dashboard-managed runtime variables across deployments.
