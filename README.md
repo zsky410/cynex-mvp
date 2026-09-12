@@ -9,7 +9,7 @@ Start with the [documentation map](./docs/README.md) and [current project status
 - Phase 1 foundation: complete and accepted.
 - Phase 2 database/Auth: original schema complete and accepted on staging.
 - Four-level Catalog hierarchy: Phase `3A` complete and accepted on staging.
-- Phase 3 Admin Catalog: Phase `3B` shared Admin shell is next.
+- Phase 3 Admin Catalog: Phase `3B` shared Admin shell is locally accepted; staging acceptance follows merge before Phase `3C`.
 - Production database migration and customer-domain cutover: deferred.
 
 ## Getting Started

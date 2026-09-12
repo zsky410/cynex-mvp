@@ -35,6 +35,9 @@ Cloudflare Workers Builds maps `develop` to the staging build/deploy scripts and
 - Supabase SSR owns HttpOnly Auth cookies and response cookie updates.
 - Auth responses use `Cache-Control: private, no-store`.
 - Staging responses receive `X-Robots-Tag`, robots meta, and blocking `robots.txt`.
+- `/admin` is a nested protected layout with responsive desktop/mobile navigation and shared operational UI primitives; Phase 3B child routes are navigation placeholders only until their approved feature slices implement data management.
+- Admin loaders refresh verified claims and confirm `app_admins`; Admin actions additionally require the request `Origin` to match `APP_ORIGIN` before authorization or mutation.
+- Admin, Auth, error, and redirect responses use `Cache-Control: private, no-store` plus `X-Robots-Tag` and HTML robots metadata that deny indexing.
 
 ## Data model
 
