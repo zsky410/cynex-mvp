@@ -38,6 +38,7 @@ Cloudflare Workers Builds maps `develop` to the staging build/deploy scripts and
 - `/admin` is a nested protected layout with responsive desktop/mobile navigation and shared operational UI primitives; Phase 3B child routes are navigation placeholders only until their approved feature slices implement data management.
 - Admin loaders refresh verified claims and confirm `app_admins`; Admin actions additionally require the request `Origin` to match `APP_ORIGIN` before authorization or mutation.
 - Admin, Auth, error, and redirect responses use `Cache-Control: private, no-store` plus `X-Robots-Tag` and HTML robots metadata that deny indexing.
+- Category writes use the signed-in Admin Supabase client under RLS. Reordering calls `admin_move_category`, an invoker function that locks and swaps adjacent Category positions atomically; it grants execution only to authenticated sessions and relies on Category RLS for authorization.
 
 ## Data model
 
