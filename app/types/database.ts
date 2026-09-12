@@ -157,11 +157,10 @@ export type Database = {
           id: string
           is_active: boolean
           is_in_stock: boolean
-          name: string
-          package_id: string
           price_vnd: number
           sort_order: number
           updated_at: string
+          variant_id: string
         }
         Insert: {
           badge?: string | null
@@ -171,11 +170,10 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_in_stock?: boolean
-          name: string
-          package_id: string
           price_vnd: number
           sort_order?: number
           updated_at?: string
+          variant_id: string
         }
         Update: {
           badge?: string | null
@@ -185,18 +183,17 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_in_stock?: boolean
-          name?: string
-          package_id?: string
           price_vnd?: number
           sort_order?: number
           updated_at?: string
+          variant_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "options_package_id_fkey"
-            columns: ["package_id"]
+            foreignKeyName: "options_variant_id_fkey"
+            columns: ["variant_id"]
             isOneToOne: false
-            referencedRelation: "packages"
+            referencedRelation: "variants"
             referencedColumns: ["id"]
           },
         ]
@@ -389,6 +386,50 @@ export type Database = {
           zalo_url?: string | null
         }
         Relationships: []
+      }
+      variants: {
+        Row: {
+          badge: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          package_id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          badge?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          package_id: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          badge?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          package_id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "variants_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

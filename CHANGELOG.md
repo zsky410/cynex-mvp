@@ -4,6 +4,17 @@ All notable project changes are recorded here. Current operational truth remains
 
 ## 2026-09-12
 
+### Phase 3A — Four-level Catalog hierarchy
+
+- Added the forward-only `variants` table between Packages and Duration Options with ordering, active state, timestamps, grants, and allowlist-backed RLS.
+- Deterministically grouped legacy Options by Package and trimmed Variant name, backfilled required `variant_id`, and removed the superseded Option-to-Package relationship and duplicated Option name.
+- Updated `catalog_search` so active Package → Variant → Duration Option paths control nested text search, availability, and minimum price.
+- Expanded local pgTAP coverage from 30 to 60 assertions across schema, constraints, four-level visibility, role mutations, and nested search; local database lint and all application gates passed.
+- Dry-ran and applied only `20260912220000_add_variants.sql` to `cynex-mvp-staging`; hosted lint, migration history, remote type synchronization, and anonymous Data API/RPC/mutation checks passed. Production remained unlinked and unchanged.
+- Added a credential-safe staging role-acceptance script that uses real Email/Password sessions with only the Supabase publishable client and cleans all prefixed Catalog fixtures in `finally`.
+- Completed real staging role acceptance: authenticated non-admin Variant/Duration Option create, update, and delete were denied; the allowlisted Admin completed create, update, and delete for both entity types under RLS. All Catalog fixtures were cleaned and the temporary non-admin Auth identity was removed.
+- Closed Phase 3A with production migrations and the customer domain unchanged.
+
 ### Phase 0 — Provisioning
 
 - Created the standalone `zsky410/cynex-mvp` repository and separated it from the existing landing deployment.

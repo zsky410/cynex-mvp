@@ -4,13 +4,13 @@ Last updated: 2026-09-12
 
 ## Current state
 
-- Current phase: Phase 3 — Admin catalog (ready to start).
+- Current phase: Phase 3 — Admin catalog (Phase 3A complete; Phase 3B next).
 - Repository: `zsky410/cynex-mvp` (public by owner decision).
 - Protected branches: `main` and `develop` require Pull Requests and the `quality` check.
 - Runtime: Node 22, pnpm 10.24.0.
 - CI: `quality` passes on `main` and `develop`.
 - Deployment: staging and production Workers Builds, isolated runtime variables, and automatic deployments are accepted end to end. Production has no custom route.
-- Data: Phase 2's original three-level schema, constraints, RLS, search RPC, generated types, and Auth were accepted locally and on staging. The newly accepted Product → Package → Variant → Duration Option requirement now needs a forward staging migration before Product editor work. Production migrations remain intentionally unapplied.
+- Data: the forward-only Phase 3A migration now implements Product → Package → Variant → Duration Option locally and on staging, including deterministic Option backfill, four-level RLS/search traversal, and synchronized generated types. Production migrations remain intentionally unapplied.
 - Production safety: the existing landing deployment remains untouched.
 - Planning: `docs/PRODUCT_UX_SPEC.md` defines product direction, users, journeys, Discovery Onboarding, four-level Selection, screen states, content, measurement, and acceptance scenarios. `docs/PROJECT_PLAN.md` defines implementation and delivery through cutover.
 - Operations: `docs/README.md` maps all sources of truth; dedicated runbooks cover infrastructure, staging migrations, stable Landing audit/port, and production cutover/rollback.
@@ -21,7 +21,7 @@ On 2026-09-12, the owner explicitly chose not to rotate or remove the credential
 
 ## Current work
 
-Begin Phase 3 with the four-level Catalog hierarchy amendment, then implement the shared Admin shell and Category CRUD without expanding into public Storefront work.
+Implement the Phase 3B shared Admin shell, then Phase 3C Category CRUD, without expanding into public Storefront work.
 
 ## Next gate
 
@@ -34,7 +34,9 @@ Every accepted change updates this snapshot and `CHANGELOG.md` in the same Pull 
 ## Handoff
 
 - Work from `/home/obi/Projects/cynex-mvp`, not the landing checkout.
-- Merge the credential-risk decision documentation into `develop`, then start Phase 3 from updated `develop` on a new `feature/*` branch.
-- Phase `3A` is the forward-only four-level hierarchy migration; after its local/staging acceptance, continue with `3B` Admin shell and `3C` Category CRUD.
+- Phase 3A work is on `feature/phase-3a-four-level-catalog`, created from updated `develop` after the credential-risk documentation merge.
+- Phase `3A` is complete. Migration `20260912220000_add_variants.sql` is applied to staging. Local reset, 60 pgTAP assertions, database lint, application gates, forward-data backfill rehearsal, staging dry-run/push/lint, remote type synchronization, and anonymous Data API/RPC/mutation checks passed.
+- Real staging role acceptance passed through the Supabase publishable client: authenticated non-admin Variant/Duration Option create, update, and delete were denied; the allowlisted Admin completed create, update, and delete for both entity types under RLS. All prefixed Catalog fixtures were cleaned and the temporary non-admin Auth identity was removed afterward.
+- Continue with `3B` Admin shell and `3C` Category CRUD.
 - Phase 4A must follow `docs/LANDING_DESIGN_AUDIT_RUNBOOK.md`: audit a detached clean worktree at verified tag `landing-v1-stable`, create screenshot/report evidence, then port only approved assets/tokens/components.
 - Keep production database migrations and the `cynex.site` Worker route deferred.

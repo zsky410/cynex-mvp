@@ -1,6 +1,6 @@
 begin;
 
-select plan(5);
+select plan(9);
 
 insert into public.categories (id, name, slug, icon_key, is_active)
 values
@@ -15,17 +15,45 @@ values
 insert into public.packages (id, product_id, name)
 values ('32000000-0000-0000-0000-000000000001', '22000000-0000-0000-0000-000000000001', 'Package');
 
+insert into public.variants (id, package_id, name)
+values ('42000000-0000-0000-0000-000000000001', '32000000-0000-0000-0000-000000000001', 'Variant');
+
 select throws_ok(
-  $$insert into public.options (package_id, name, duration_label, price_vnd) values ('32000000-0000-0000-0000-000000000001', 'Invalid', '1 month', -1)$$,
+  $$insert into public.variants (package_id, name) values ('32000000-0000-0000-0000-000000000001', ' ')$$,
+  '23514',
+  null,
+  'variant name cannot be blank'
+);
+select throws_ok(
+  $$insert into public.variants (package_id, name, sort_order) values ('32000000-0000-0000-0000-000000000001', 'Invalid', -1)$$,
+  '23514',
+  null,
+  'variant sort order cannot be negative'
+);
+
+select throws_ok(
+  $$insert into public.options (variant_id, duration_label, price_vnd) values ('42000000-0000-0000-0000-000000000001', '1 month', -1)$$,
   '23514',
   null,
   'price cannot be negative'
 );
 select throws_ok(
-  $$insert into public.options (package_id, name, duration_label, price_vnd, compare_at_price_vnd) values ('32000000-0000-0000-0000-000000000001', 'Invalid', '1 month', 100, 99)$$,
+  $$insert into public.options (variant_id, duration_label, price_vnd, compare_at_price_vnd) values ('42000000-0000-0000-0000-000000000001', '1 month', 100, 99)$$,
   '23514',
   null,
   'compare-at price cannot be lower than sale price'
+);
+select throws_ok(
+  $$insert into public.options (variant_id, duration_label, price_vnd) values ('42000000-0000-0000-0000-000000000001', ' ', 100)$$,
+  '23514',
+  null,
+  'duration label cannot be blank'
+);
+select throws_ok(
+  $$insert into public.options (duration_label, price_vnd) values ('1 month', 100)$$,
+  '23502',
+  null,
+  'duration option requires a variant'
 );
 select throws_ok(
   $$update public.products set slug = 'changed-after-publish' where id = '22000000-0000-0000-0000-000000000001'$$,
