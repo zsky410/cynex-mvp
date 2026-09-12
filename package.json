@@ -2,11 +2,19 @@
 	"name": "cynex-mvp",
 	"private": true,
 	"type": "module",
+	"packageManager": "pnpm@10.24.0",
+	"engines": {
+		"node": "22.x"
+	},
 	"scripts": {
 		"build": "react-router build",
 		"dev": "react-router dev",
+		"lint": "eslint .",
+		"test": "vitest run --passWithNoTests",
+		"test:e2e": "playwright test",
 		"typecheck": "wrangler types && react-router typegen && tsc -b",
-		"deploy": "pnpm run build && wrangler deploy",
+		"deploy:staging": "pnpm run build && wrangler deploy --env staging",
+		"deploy:production": "pnpm run build && wrangler deploy --env production",
 		"preview": "pnpm run build && vite preview",
 		"cf-typegen": "wrangler types",
 		"postinstall": "wrangler types"
@@ -19,14 +27,25 @@
 	},
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "^1.54.8",
+		"@eslint/js": "^10.0.1",
+		"@playwright/test": "^1.63.0",
 		"@react-router/dev": "^8",
 		"@tailwindcss/vite": "^4.2.2",
+		"@testing-library/jest-dom": "^7.0.1",
+		"@testing-library/react": "^16.3.3",
 		"@types/node": "^22",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
+		"eslint": "^10.10.0",
+		"eslint-plugin-react-hooks": "^7.1.1",
+		"globals": "^17.12.0",
+		"jsdom": "^30.0.1",
+		"supabase": "^2.117.0",
 		"tailwindcss": "^4.2.2",
 		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.70.0",
 		"vite": "^8.0.3",
+		"vitest": "^5.0.0",
 		"wrangler": "^4.131.1"
 	}
 }

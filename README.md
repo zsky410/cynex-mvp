@@ -1,6 +1,6 @@
-# Welcome to React Router!
+# Cynex Storefront MVP
 
-A modern, production-ready template for building full-stack React applications using React Router.
+A full-stack storefront for browsing Cynex premium app products and contacting support to purchase a selected package option.
 
 ## Features
 
@@ -19,7 +19,7 @@ A modern, production-ready template for building full-stack React applications u
 Install the dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Development
@@ -27,7 +27,7 @@ npm install
 Start the development server with HMR:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Your application will be available at `http://localhost:5173`.
@@ -37,7 +37,7 @@ Your application will be available at `http://localhost:5173`.
 Preview the production build locally:
 
 ```bash
-npm run preview
+pnpm preview
 ```
 
 ## Building for Production
@@ -45,35 +45,31 @@ npm run preview
 Create a production build:
 
 ```bash
-npm run build
+pnpm build
 ```
 
 ## Deployment
 
 Deployment is done using the Wrangler CLI.
 
-To build and deploy directly to production:
+Deployments use explicit environments:
 
 ```sh
-npm run deploy
-```
-
-To deploy a preview URL:
-
-```sh
-npx wrangler versions upload
-```
-
-You can then promote a version to production after verification or roll it out progressively.
-
-```sh
-npx wrangler versions deploy
+pnpm deploy:staging
+pnpm deploy:production
 ```
 
 ## Styling
 
 This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
 
----
+## Local services
 
-Built with ❤️ using React Router.
+Start and stop the isolated Supabase stack with:
+
+```bash
+pnpm exec supabase start
+pnpm exec supabase stop
+```
+
+Copy `.dev.vars.example` to `.dev.vars` and fill local-only values. Never commit `.dev.vars` or credentials.
