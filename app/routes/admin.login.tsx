@@ -7,6 +7,10 @@ export function meta() {
   return [{ title: "Đăng nhập quản trị | Cynex" }];
 }
 
+export function headers() {
+  return { "Cache-Control": "private, no-store" };
+}
+
 export async function action({ request, context }: Route.ActionArgs) {
   const formData = await request.formData();
   const email = String(formData.get("email") ?? "").trim();
